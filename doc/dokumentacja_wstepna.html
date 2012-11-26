@@ -1,0 +1,53 @@
+<h1 class="Title">Techniki kompilacji</h1>
+<h2 class="Subtitle">Dokumentacja wstepna projektu</h2>
+<h2 class="Subtitle"><cite>System analizy sformalizowanych aktów prawnych.</cite></h2>
+<h3 class="Author">Autor: <strong>Andrzej Fiedukowicz</strong></h3>
+<h3 class="Author">Prowadz¹cy projekt: <strong>Piotr Gawkowski</strong></h3>
+<div class="PageSeparator"></div>
+<h1>Nieformalne sformu³owanie problemu</h1>
+<p>Aplikacja ma za zadanie spe³niaæ nastêpuj¹ce funkcje:</p>
+<p>
+<ol>
+	<li>Analizowaæ wprowadzone w ni¿ej wyspecyfikowanym jêzyku akty prawne.</li>	
+	<li>Odpowiadaæ na pytania dotycz¹ce poszczególnych predykatów z mo¿liwoœci¹ dodania wiedzy spoza aktów prawnych.<li>
+	<li>
+</ol>
+</p>
+
+Przyk³adowe wejœcie ( << ) i wyjœcie ( >> ):
+<< Domyslnie nie idzieDoWiezienia(Kto).
+<< Jesli wytnieDrzewo(Kto, Drzewo) i maPonadDwadziesciaLat(Drzewo) to idzieDoWiezienia(Kto).
+<< Jesli wytnieDrzewo(Kto, Drzewo) i jestGatunkuChronionego(Drzewo) to idzieDoWiezienia(Kto).
+<< Jesli jestBaobabem(Drzewo) lub jestBukiem(drzewo) to jestGatunkuChronionego(Drzewo).
+<< wytnieDrzewo(franek, buk).
+<< wytnieDrzewo(jozek, sosna).
+<< nie maPonadDwadziesciaLat(sosna).
+<< idzieDoWiezienia(jozek)?
+>> NIE
+<< idzieDoWiezienia(franek)?
+>> NIE WIADOMO
+<< jestBukiem(buk).
+<< idzieDoWiezienia(franek)?
+>> TAK
+
+Bazowa gramatyka (byæ mo¿e zostanie rozbudowana):
+WEJSCIE = ZDANIE | ZDANIE WEJSCIE
+ZDANIE = IPLIKACJA | TWIERDZENIE | DOMYSLNY | PYTANIE
+IMPLIKACJA = 'Jeœli ' ILOCZYN ' to ' ZDANIE_PROSTE '.'
+DOMYSLNNY = 'Domyœlnie ' ZDANIE_PROSTE '.'
+TWIERDZENIE = ILOCZYN '.'
+PYTANIE = ILOCZYN '?'
+ILOCZYN = SUMA ' i ' ILOCZYN | SUMA
+SUMA = ZDANIE_PROSTE ' lub '  SUMA | ZADANIE_PROSTE
+ZDANIE_PROSTE = SMALL_ALFA '(' ARGUMENTY ')' | 'nie ' ZDANIE_PROSTE | SMALL_ALFA '(' ')' 
+ARGUMENTY = ARGUEMNT ',' ARGUEMTNY | ARGUMENT
+ARGUMENT = ZMIENNA | OBIEKT
+ZMIANNA = BIG_ALFA
+OBIEKT = SMALL_ALFA
+BIG_ALFA = [A-Z][a-zA-Z]*
+SMALL_ALFA = [a-z][a-zA-Z]*
+
+Opis algorytmu rozwi¹zuj¹cego problem:
+
+
+
