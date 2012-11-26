@@ -47,7 +47,43 @@ OBIEKT = SMALL_ALFA
 BIG_ALFA = [A-Z][a-zA-Z]*
 SMALL_ALFA = [a-z][a-zA-Z]*
 
-Opis algorytmu rozwi¹zuj¹cego problem:
+DRZEWO_WYRA¯ENIA - Sturktura drzewiasta z 0 - 2 dzieæmi dla ka¿dego wêz³a.
+				   W liœciach znajduj¹ siê zdania proste, natomiast w pozosta³ych wêz³ach operatory logiczne (i, lub, nie).
 
+PROCEDURA PYTANIE( ILOCZYN, FAKTY, ZNACZNIK_ZAPRZECZENIA = FALSE, STOS_PYTAN = pusty_stos )
+0. Roz³ó¿ ILOCZYN na strukturê DRZEWO_WYRA¯ENIA
 
+Opis algorytmu rozwi¹zuj¹cego problem (za³o¿enie braku sprzecznoœci w faktach):
+PROCEDURA PYTANIE( PYTANIE, FAKTY, ZNACZNIK_ZAPRZECZENIA = FALSE, STOS_PYTAN = pusty_stos )
+Argumenty:
+  * PYTANIE - dowolne zdanie proste
+  * FAKTY - zbiór faktów programu
+  * STOS_PYTAN - uzywany do rekursji by zapamietac jakie pytanie doprowadzily nas do bierzacego
+  * ZNACZNIK_ZAPRZECZENA - mo¿e byæ wyznaczany dynamicznie jeœli doszliœmy 
+Zwraca
+  * ODPOWIEDZ - { TRUE, FALSE, DONT_KNOW }
+  
+0. Jeœli PYTANIE jest na STOS_PYTAN to zwróæ DONT_KNOW.
+1. ZnajdŸ formu³y zawieraj¹ce zdania proste wraz ze znacznikami zaprzeczenia  pasuj¹ce do zdania prostego PYTANIE i stwórz z nich listê L. (Wywo³aj procedurê L = ZNAJDZ_POWIAZANE(PYTANIE, FAKTY))
+2. Dla ka¿dego elementu na liœcie L wyprowadŸ listê warunków LW do spe³anienia zdania prostego PYTANIE. (Wywo³aj procedurê LW(i) = ZNAJDZ_WARUNKI(PYTANIE, L(i)) dla ka¿dego L(i))
+2a. Jeœli LW jest puste zwróæ negacjê wartoœci ZNACZNIK_ZAPRZECZENIA.
+3. Dla ka¿dego elementu L(i) z listy L, dla ka¿dego zdania prostego LW(i)(j) ze struktury LW(i) wywo³aj PYTANIE(LW(i)(j), FAKTY, L(i).ZNACZNIK_ZAPRZECZENIA xor ZNACZNIK_ZAPRZECZENIA, STOS_PYTAN + L(i)).
+   Podstaw wyniki zapytañ pod odpowiednie zdania proste w strukturze LW(i).
+4. Dla ka¿dego elementu L(i) z listy L, dla ka¿dego zdania opisanego struktur¹ LW(i) wylicz jego wartoœæ logiczn¹ korzystaj¹c z obliczonych wartoœci zdañ prostych.
+   Jeœli któregokolwiek ze zdañ LW(i) jest okreœlona to zwróæ tê wartoœæ.
+   
+PROCEDURA ZNAJDZ_POWIAZANE( PYTANIE, FAKTY )
+0. Dla ka¿ego faktu F ze zbioru FAKTY wykonuj krok 1.
+1. Znajdz wszystkie zdania proste w fakcie F. Dla ka¿dego zdania prostego Z wykonuj kroki 1.1 - 1.2
+1.1. Jeœli zdanie proste ma inny identyfikator ni¿ PYTANIE to wróæ do 1.
+1.2. WeŸ kolejne argumenty X - zdania PYTANIE i Y - zdania Z i wykonuj dla nich kroki 1.2.1 - 1.2.5
+1.2.1. Jeœli X jest zmienn¹ i Y jest zmienn¹ kontynuuj podstawiaj¹c pod F_TMP fakt F.
+1.2.2. Jeœli X jest zmienn¹ a Y jest obiektem wróæ do 1.
+1.2.3. Jeœli X jest obiektem a Y jest zmienn¹ kontynuuj podstawiaj¹c pod F_TMP fakt F z podstawieniem X pod Y.
+1.2.4. Jeœli X jest zmiennn¹ i Y jest zmienn¹, kontynuuj jeœli X równe jest Y podstawiaj¹c pod F_TMP fakt F.
+1.2.5. Dodaj do listy L fakt F_TMP
+2. Zwróæ listê L
 
+PROCEDURA ZNAJDZ_WARUNKI( PYTANIE, FAKT )
+0. Zapisz FAKT w formie drzewa typu DRZEWO_WYRA¯ENIA.
+1. 
