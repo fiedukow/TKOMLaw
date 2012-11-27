@@ -15,17 +15,20 @@
 </p>
 
 Przyk³adowe wejœcie ( << ) i wyjœcie ( >> ):
-<< Domyslnie nie idzieDoWiezienia(Kto).
+<< Domyslnie nie idzieDoWiezienia(). //lista argumentów dla "Domyœlnie" jest ignorowana
+<< Domyœlnie nie jestGatunkuChronionego().
 << Jesli wytnieDrzewo(Kto, Drzewo) i maPonadDwadziesciaLat(Drzewo) to idzieDoWiezienia(Kto).
 << Jesli wytnieDrzewo(Kto, Drzewo) i jestGatunkuChronionego(Drzewo) to idzieDoWiezienia(Kto).
 << Jesli jestBaobabem(Drzewo) lub jestBukiem(drzewo) to jestGatunkuChronionego(Drzewo).
 << wytnieDrzewo(franek, buk).
 << wytnieDrzewo(jozek, sosna).
+<< idzieDoWiezienia(jozek)?
+>> (NIE) NIE WIADOMO
 << nie maPonadDwadziesciaLat(sosna).
 << idzieDoWiezienia(jozek)?
 >> NIE
 << idzieDoWiezienia(franek)?
->> NIE WIADOMO
+>> (NIE) NIE WIADOMO
 << jestBukiem(buk).
 << idzieDoWiezienia(franek)?
 >> TAK
@@ -39,13 +42,14 @@ TWIERDZENIE = ILOCZYN '.'
 PYTANIE = ILOCZYN '?'
 ILOCZYN = SUMA ' i ' ILOCZYN | SUMA
 SUMA = ZDANIE_PROSTE ' lub '  SUMA | ZADANIE_PROSTE
-ZDANIE_PROSTE = SMALL_ALFA '(' ARGUMENTY ')' | 'nie ' ZDANIE_PROSTE | SMALL_ALFA '(' ')' 
+ZDANIE_PROSTE = IDENTYFIKATOR '(' ARGUMENTY ')' | 'nie ' ZDANIE_PROSTE | IDENTYFIKATOR '(' ')' 
 ARGUMENTY = ARGUEMNT ',' ARGUEMTNY | ARGUMENT
 ARGUMENT = ZMIENNA | OBIEKT
+IDENTYFIKATOR = SMALL_ALPHA
 ZMIANNA = BIG_ALFA
 OBIEKT = SMALL_ALFA
-BIG_ALFA = [A-Z][a-zA-Z]*
-SMALL_ALFA = [a-z][a-zA-Z]*
+BIG_ALPHA = [A-Z][a-zA-Z]*
+SMALL_ALPHA = [a-z][a-zA-Z]*
 
 DRZEWO_WYRA¯ENIA - Sturktura drzewiasta z 0 - 2 dzieæmi dla ka¿dego wêz³a.
 				   W liœciach znajduj¹ siê zdania proste, natomiast w pozosta³ych wêz³ach operatory logiczne (i, lub, nie).
