@@ -9,12 +9,12 @@
 <p>
 <ol>
 	<li>Analizowaæ wprowadzone w ni¿ej wyspecyfikowanym jêzyku akty prawne.</li>	
-	<li>Odpowiadaæ na pytania dotycz¹ce poszczególnych predykatów z mo¿liwoœci¹ dodania wiedzy spoza aktów prawnych.<li>
-	<li>
+	<li>Odpowiadaæ na pytania dotycz¹ce poszczególnych predykatów z mo¿liwoœci¹ dodania wiedzy spoza aktów prawnych.<li>	
 </ol>
 </p>
 
-Przyk³adowe wejœcie ( << ) i wyjœcie ( >> ):
+Przyk³adowe wejœcia ( << ) i wyjœcia ( >> ):
+PRZYK£AD 1:
 << Domyslnie nie idzieDoWiezienia(). //lista argumentów dla "Domyœlnie" jest ignorowana
 << Domyœlnie nie jestGatunkuChronionego().
 << Jesli wytnieDrzewo(Kto, Drzewo) i maPonadDwadziesciaLat(Drzewo) to idzieDoWiezienia(Kto).
@@ -23,33 +23,59 @@ Przyk³adowe wejœcie ( << ) i wyjœcie ( >> ):
 << wytnieDrzewo(franek, buk).
 << wytnieDrzewo(jozek, sosna).
 << idzieDoWiezienia(jozek)?
->> (NIE) NIE WIADOMO
+>> NIE (Z DOMYŒLNEGO)
 << nie maPonadDwadziesciaLat(sosna).
 << idzieDoWiezienia(jozek)?
 >> NIE
 << idzieDoWiezienia(franek)?
->> (NIE) NIE WIADOMO
+>> NIE (Z DOMYŒLNEGO)
 << jestBukiem(buk).
 << idzieDoWiezienia(franek)?
 >> TAK
+<< nie jestGatunkuChroniongo(buk).
+>> SPRZECZNOŒÆ Z "Jesli jestBaobabem(Drzewo) lub jestBukiem(drzewo) to jestGatunkuChronionego(Drzewo).", PREDYKAT ZIGNOROWANY
 
-Bazowa gramatyka (byæ mo¿e zostanie rozbudowana):
-WEJSCIE = ZDANIE | ZDANIE WEJSCIE
-ZDANIE = IPLIKACJA | TWIERDZENIE | DOMYSLNY | PYTANIE
-IMPLIKACJA = 'Jeœli ' ILOCZYN ' to ' ZDANIE_PROSTE '.'
-DOMYSLNNY = 'Domyœlnie ' ZDANIE_PROSTE '.'
-TWIERDZENIE = ILOCZYN '.'
-PYTANIE = ILOCZYN '?'
-ILOCZYN = SUMA ' i ' ILOCZYN | SUMA
-SUMA = ZDANIE_PROSTE ' lub '  SUMA | ZADANIE_PROSTE
-ZDANIE_PROSTE = IDENTYFIKATOR '(' ARGUMENTY ')' | 'nie ' ZDANIE_PROSTE | IDENTYFIKATOR '(' ')' 
-ARGUMENTY = ARGUEMNT ',' ARGUEMTNY | ARGUMENT
-ARGUMENT = ZMIENNA | OBIEKT
-IDENTYFIKATOR = SMALL_ALPHA
-ZMIANNA = BIG_ALFA
-OBIEKT = SMALL_ALFA
-BIG_ALPHA = [A-Z][a-zA-Z]*
-SMALL_ALPHA = [a-z][a-zA-Z]*
+PRZYK£AD 2:
+//Konwencja relacji na pierwszej pozycji wyszczególniono osobê opisan¹ predykatem np. brat(A, B) tzn. ¿e A jest bratem B.
+<< rodzenstwo(A, B) i mezczyzna(B) oznacza, ze brat(A, B).
+<< rodzenstwo(A, B) i kobieta(B) oznacza, ze siostra(A, B).
+<< rodzenstwo(A, B) oznacza, ze siostra(A, B) lub brat(A, B).
+<< rodzenstwo(A, B) oznacza, ze rodzenstwo(B, A).
+<< Jeœli dziecko(A, B) to rodzic(B, A).
+<< Jeœli rodzic(A, B) i mezczyzna(A) to ojciec(A, B).
+<< Jeœli rodzic(A, B) i kobieta(A) to matka(A, B).
+
+
+
+Formalna specyfikacja jêzyka (EBNF):
+WEJSCIE = ZDANIE | ZDANIE, WEJSCIE;
+ZDANIE = IMPLIKACJA | ROWNOWAZNOSC | TWIERDZENIE | DOMYSLNY | PYTANIE;
+IMPLIKACJA = 'Jesli ', ILOCZYN, ' to ', ILOCZYN, '.';
+ROWNOWAZNOSC = ILOCZYN, ' oznacza, ze ', ILOCZYN
+DOMYSLNY = 'Domyslnie ', ZDANIE_PROSTE;
+TWIERDZENIE = ILOCZYN, '.';
+PYTANIE = ILOCZYN, '?';
+ILOCZYN = SUMA, ' i ', ILOCZYN | SUMA;
+SUMA = ZDANIE_PROSTE, ' lub ', SUMA | ZDANIE_PROSTE;
+ZDANIE_PROSTE = IDENTYFIKATOR, '(', ARGUMETNY, ')' 
+				| 'nie ', ZDANIE_PROSTE 
+				| IDENTYFIKATOR, '(', ')';
+ARGUMENTY = ARGUMENT, ',', ARGUMENTY | ARGUMENT;
+ARGUMENT = ZMIENNA | OBIEKT;
+IDENTYFIKATOR = SLOWO_Z_MALEJ;
+ZMIENNA = SLOWO_Z_WIELKIEJ;
+OBIEKT = SLOWO_Z_MALEJ;
+SLOWO_Z_MALEJ = MALA_LITERA, {LITERA};
+SLOWO_Z_WIELKIEJ = WIELKA_LITERA, {LITERA};
+LITERA = WIELKA_LITERA | MALA_LITERA;
+WIELKA_LITERA = "A" | "B" | "C" | "D" | "E" | "F" | "G"
+              | "H" | "I" | "J" | "K" | "L" | "M" | "N"
+              | "O" | "P" | "Q" | "R" | "S" | "T" | "U"
+              | "V" | "W" | "X" | "Y" | "Z" ;
+MALA_LITERA = "a" | "b" | "c" | "d" | "e" | "f" | "g"
+              | "h" | "i" | "j" | "k" | "l" | "m" | "n"
+              | "o" | "p" | "q" | "r" | "s" | "t" | "u"
+              | "v" | "w" | "x" | "y" | "z" ;		
 
 DRZEWO_WYRA¯ENIA - Sturktura drzewiasta z 0 - 2 dzieæmi dla ka¿dego wêz³a.
 				   W liœciach znajduj¹ siê zdania proste, natomiast w pozosta³ych wêz³ach operatory logiczne (i, lub, nie).
