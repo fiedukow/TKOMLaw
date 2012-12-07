@@ -1,0 +1,234 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="Author" content="fiedukow">
+	<meta http-equiv="Reply-to" content="fiedukow@gmail.com">
+	<meta http-equiv="Content-Language" content="pl"> 
+	<title>TKOM :: dokumentacja wstepna</title>
+	<link rel="Stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<h1 class="Title">Techniki kompilacji</h1>
+<h2 class="Subtitle">Dokumentacja wstepna projektu</h2>
+<h2 class="Subtitle"><cite>System analizy sformalizowanych aktów prawnych.</cite></h2>
+<h3 class="Author">Autor: <strong>Andrzej Fiedukowicz</strong></h3>
+<h3 class="Author">Prowadzący projekt: <strong>Piotr Gawkowski</strong></h3>
+<div class="PageSeparator"></div>
+
+<h1>Funkcjonalności</h1>
+<h2>Wymagania funkcjonalne</h2>
+<p>Aplikacja ma za zadanie spełniać następujące funkcje:</p>
+<p>
+<ol>
+	<li>Analizować wprowadzone w niżej wyspecyfikowanym języku akty prawne.</li>	
+	<li>Odpowiadać na pytania dotyczące poszczególnych predykatów.</li>
+	<li>Wyszukiwać zapisy prawa zawierające odniesienie do określonych predykatów</li>
+	<li>Analizować fakty dt. sprawy i konfrontować je z aktami prawnymi.</li>
+	<li>Wychwytywać próbę wprowadzenia sprzecznych faktów i informować o tym zdarzeniu użytkownika.</h1>
+</ol>
+</p>
+
+<h2>Wymagania niefunkcjonalne</h2>
+<ol>
+	<li>Wejście aplikacji powinno być czytelne i zrozumiałe dla osoby posługującej się biegle językiem polskim.</li>
+	<li>Wyjście aplikacji powinno być przystosowane do czytania przez człowieka (także w języku polskim).</li>
+</ol>
+
+<h2>Formalna specyfikacja języka wejściowego (EBNF)</h2>
+<pre>
+WEJSCIE = ZDANIE | ZDANIE, WEJSCIE;
+ZDANIE = ZDANIE_TWIERDZACE | REGULA | PYTANIE | WYSZUKIWANIE;
+REGULA = "Jesli ", ZDANIE_TWIERDZACE, " to ", ZDANIE_PROSTE, ".";
+ZDANIE_TWIERDZACE = SUMA_LOGICZNA, "."
+PYTANIE = ZDANIE_PROSTE , "?"
+WYSZUKIWANIE = "Co wiesz o ", ZDANIE_JEZYKOWE, "?"
+SUMA_LOGICZNA = ILOCZYN_LOGICZNY, " lub ", SUMA_LOGICZNA | ILOCZYN_LOGICZNY
+ILOCZYN_LOGICZNY = ZDANIE_PROSTE, " i ", ILOCZYN_LOGICZNY | ZDANIE_PROSTE
+ZDANIE_PROSTE = "nie ", ZDANIE_PROSTE | ZDANIE_JEZYKOWE
+ZDANIE_JEZYKOWE = '"', {ZNAK_ALFABETU}, '"';
+ZNAK_ALFABETU = ^" | '\"' 
+</pre>
+
+<h2>Standardowe wejście</h2>
+<p>Na wejściu aplikacja przyjmuje ciąg zgodny z wyżej wyspecyfikowanym symbbolem WEJSCIE</p>
+
+<h2>Parametry aplikacji</h2>
+<p>
+<ul>
+<li><strong>-q, --quiet</strong> - wyłącza potwierdzanie przyjęcia faktów (patrz sekcja wyjście tej dokumentacji).
+</ul>
+<p>
+
+<h2>Standardowe wyjście</h2>
+<p>Dla każdego ZDANIA wejściowego <strong>Z</strong> program wyprowadzi jedną linię tekstu:</p>
+<p>
+<ul>
+	<li>
+		Jeśli zdanie <strong>Z</strong> jest zdaniem twierdzącym lub regułą i <strong>nie</strong> stoi w sprzeczności
+		z załadowanymi faktami zostanie wyprowadzona linia:
+		<pre>Zdanie: <strong>Z</strong> zostało dodane do bazy wiedzy.</pre>
+	</li>
+	<li>
+		Jeśli zdanie <strong>Z</strong> jest zdaniem twierdzącym lub regułą i stoi w sprzeczności z dotychczasową
+		bazą wiedzy zostanie wyprowadzona linia:
+		<pre>Zdanie: <strong>Z</strong> jest sprzeczne z dotychczasową bazą wiedzy.</pre>
+	</li>
+	<li>
+		Jeśli zdanie <strong>Z</strong> jest pytaniem to aplikacja odpowiada na nie na jeden z trzech sposobów:
+		<pre>
+PRAWDA
+FAŁSZ
+NIE WIADOMO
+		</PRE>
+	</li>
+	<li>
+		Jeśli zdanie <strong>Z</strong> jest wyszukaniem to aplikacja odpowiada na nie wyprowadzając listę zdań zawierająch predykat
+		którego wyszukania zarządał użytkownik:
+		<pre>
+<cite>Zdanie <strong>Z</strong> pojawia się w następujących kontekstach
+ * Z1
+ * Z2
+ ...</cite>
+		</pre>
+	</li>
+</ul>
+</p>
+
+<h1>Analiza wymagań</h1>
+<h2>Analiza wymagań funkcjonalnych</h2>
+<ul>
+<li>
+<p><cite>Analizować wprowadzone w niżej wyspecyfikowanym języku akty prawne.</cite></p>
+<p>W ramach tego wymagania aplikacja powinna być w stanie na podstawie wejścia utworzyć struktury danych
+odpowiedzialne za przechowywanie listy zapisów sformalizowanego prawa w formie umożliwiającej ich
+szybkie przetworzenie w celu odpowiedzi na wprowadzone na wejście zapytania użytkownika.</p>
+</li>	
+<li>Odpowiadać na pytania dotyczące poszczególnych predykatów.
+<p>W ramach tego wymagania aplikacja powinna przetwarzać zapytania użytkownika do formy umożliwiającej
+sprawdzenie, czy dane zdanie jest zgodne z prawdą, czy nie przez przeanalizowanie struktury o której mowa w pkt. 1.</p>
+</li>
+<li>Wyszukiwać zapisy prawa zawierające odniesienie do określonych predykatów
+<p>W ramach tego wymagania aplikacja powinna przetwarzać zapytania wyszukujące użytkownika do formy umożliwiającej
+przeszukanie struktury bazy wiedzy w poszukiwaniu wystąpień danego predykatu.
+Struktura bazy wiedzy musi także umożliwać wyszukiwanie listy zdań zawierających dany predykat.</p>
+</li>
+<li>Analizować fakty dt. sprawy i konfrontować je z aktami prawnymi.</li>
+<p>W ramach tego wymagania aplikacja powinna analizować zdania twierdzące podawane na standardowe wejście i dołączać
+je do bazy wiedzy.
+</p>
+<li>Wychwytywać próbę wprowadzenia sprzecznych faktów i informować o tym zdarzeniu użytkownika.</h1>
+<p>W ramach tego wymagania, aplikacja przed dodaniem kolejnego zdania do bazy wiedzy powinna przeanalizować, czy owo zdanie
+nie stoi w jakiś sposób w sprzeczności z dotąd zapisanymi w bazie wiedzy faktami. Jeśli aplikacja wykryje taką sytuację
+nie powinna dodawać nowego faktu do bazy wiedzy, ale powinna wyprowadzić na wyjście odpowiednią informację.</p>
+</ul>
+
+<h2>Analiza wymagań niefunkcjonalnych</h2>
+<ul>
+<li>Wejście aplikacji powinno być czytelne i zrozumiałe dla osoby posługującej się biegle językiem polskim.</li>
+<li>Wyjście aplikacji powinno być przystosowane do czytania przez człowieka (także w języku polskim).</li>
+<p>Zarówno gramatyka, jak i format wyjścia aplikacji powinien zostać oparty o język polski w taki sposób, by czytanie go
+było intuicyjne a ilość nadmiarowych znaków możliwie ograniczona. Wyżej wymieniony format wejścia/wyjścia wydaje się posiadać 
+taką właściwość.</p>
+</ul>
+
+<h1>Zarys struktury aplikacji</h1>
+<p>Aplikacja składać będzie się z trzech podstawowych modułów oraz modułu wejścia wyjścia (interface użytkownika)</p>
+<h2>Interpreter</h2>
+<p>Zdaniem interpretera jest przetwarzanie otrzymanych z modułu wejścia wyjścia zdań na wywołania metod bazy
+wiedzy lub modułu wnioskującego, w szczególności dodawanie nowych zdań do bazy wiedzy i wywołanie zapytania na module
+wnioskującym.
+Interpreter posiada interfejs pozwalający na:
+<ul>
+<li>Podanie nowego zdania z wejścia do poddania analizie.</li>
+</ul>
+</p>
+<h2>Baza wiedzy</h2>
+<p>Jest to moduł odpowiedzialny za przechowywanie w odpowiedniej strukturze dotychczas wprowadzonych faktów
+a także przyjmowanie nowych faktów i dodawanie ich do tej struktury.
+Struktura ta ma charakter listy drzew, z których każde ma w węzłach niebędących liśćmi operatory logiczne
+a w liściach predykaty. Możliwe operatory logiczne to <cite>implikacja</cite>, <cite>lub</cite>, <cite>i</cite>.
+oraz <cite>zaprzeczenie</cite>.
+</p>
+<p>
+Baza wiedzy udostępnia interfejs pozwalający na:
+<ul>
+<li>Przeglądanie zgromadzonych faktów.</li>
+<li>Wyszukiwanie faktów zawierającyh określone predykaty.</li>
+<li>Dodawnie nowych faktów.</li>
+</ul>
+<h2>Moduł wnioskujący</h2>
+<p>Moduł wnioskujący posiada algorytmy pozwajające na odpowiadanie na zapytania użytkownika a także 
+na wyszukanie sprzeczności wprowadzonego zdanie z innymi zdaniami w bazie wiedzy.
+</p>
+<p>
+Moduł wnisokujący udostępnia interfejs pozwalający na:
+<ul>
+<li>Zadawanie zapytań dt. określonego zdania.</li>
+<li>Wyszukiwanie sprzeczności z bazą wiedzy dt. określonego zdania.</li>
+</ul>
+</p>
+<h2>Moduł wejścia/wyjścia</h2>
+<p>
+Moduł ten obsługuje dostęp do standardowego wejścia i wyjścia.
+Wczytuje kolejne linie wejścia po każdą z nich przekazując do interpretera w celu analizy.
+Moduł zawiera definicję parametryzowanlych komunikatów wyjsciowych, które pozostałe moduły
+mogą wyprowadzac na wyjście.
+</p>
+<p>
+Moduł wejścia wyjścia udostępnia interfejs pozwalający na:
+<ul>
+<li>Wyprowadzanie komunikatów na standardowe wyjście wedle posiadanych wzorców.</li>
+</ul>
+</p>
+
+<h1>Przykładowe wejścia i wyjścia</h1>
+<h2>Przykład 1 (wycinka drzew)</h2>
+<pre>
+<cite class="in">Jesli "wytnie drzewo" i "drzewo pod ochroną" i nie "drzewo ma mniej niż 5 lat" to "idzie do wiezienia".</cite>
+<cite class="outq">Zdanie: <strong>'Jesli "wytnie drzewo" i "drzewo pod ochroną" i nie "drzewo ma mniej niż 5 lat" to "idzie do wiezienia"'</strong> zostało dodane do bazy wiedzy.</cite>				   
+<cite class="in">Jesli nie "wytnie drzewo" lub "drzewo ma mniej niż 5 lat" to nie "idzie do wiezienia".</cite>
+<cite class="outq">Zdanie: <strong>'Jesli nie "wytnie drzewo" lub "drzewo ma mniej niż 5 lat" to nie "idzie do wiezienia"'</strong> zostało dodane do bazy wiedzy.</cite>				   
+<cite class="in">"idzie do wiezienia"?</cite>
+<cite class="out">NIE WIADOMO</cite>
+<cite class="in">nie "idzie do wiezienia"?</cite>
+<cite class="out">NIE WIADOMO</cite>
+<cite class="in">"wytnie drzewo".</cite>
+<cite class="outp">Zdanie: <strong>'"wytnie drzewo"'</strong> zostało dodane do bazy wiedzy.</cite>
+<cite class="in">"idzie do wiezienia"?</cite>
+<cite class="out">NIE WIADOMO</cite>
+<cite class="in">"drzewo pod ochroną".</cite>
+<cite class="outp">Zdanie: <strong>'"drzewo pod ochroną"'</strong> zostało dodane do bazy wiedzy.</cite>
+<cite class="in">"idzie do wiezienia"?</cite>
+<cite class="out">PRAWDA</cite>
+<cite class="in">"idzie do więzienia" i "drzewo ma mniej niż 5 lat"?</cite>
+<cite class="out">NIE WIADOMO</cite>
+<cite class="in">"idzie do więzienia" lub "drzewo ma mniej niż 5 lat"?</cite>
+<cite class="out">PRAWDA</cite>
+</pre>
+
+<h2>Przykład 2 (sprzeczność)</h2>
+<pre>
+<cite class="in">Jesli "wytnie drzewo" i "drzewo pod ochroną" to "idzie do wiezienia".</cite>
+<cite class="outq">Zdanie: <strong>'Jesli "wytnie drzewo" i "drzewo pod ochroną" to "idzie do wiezienia"'</strong> zostało dodane do bazy wiedzy.</cite>				   
+<cite class="in">Jesli "wytnie drzewo" i "drzewo ma mniej niż 5 lat" to nie "idzie do wiezienia".</cite>
+<cite class="out">Zdanie: <strong>'Jesli "wytnie drzewo" i "drzewo ma mniej niż 5 lat" to nie "idzie do wiezienia"'</strong> jest sprzeczne z dotychczasową bazą wiedzy.</cite>				  
+</pre>
+
+<h2>Przykład 3 (przechodniosc wnioskowania i przeszukiwanie) - z opcją -q</h2>
+<pre>
+<cite class="in">Jesli "ktos maluje pokoj na zielono" to "ktos ma zielony pokoj".</cite>
+<cite class="in">Jesli "ktos ma zielony pokoj" to "umie skakac na skakance".</cite>
+<cite class="in">Jesli "ktos umie skakac na skakance" to "ktos jest wesolym czlowiekiem".</cite>
+<cite class="in">Jesli "ktos jest wesolym czlowiekiem" i "Ala ma kota" to "kot Ali jest wesoly".</cite>
+<cite class="in">"Ala ma kota".</cite>
+<cite class="in">Co wiesz o "Ala ma kota"?</cite>
+<cite class="out">Zdanie "Ala ma kota" pojawia się w następujących kontekstach
+ * Jesli "ktos jest wesolym czlowiekiem" i "Ala ma kota" to "kot Ali jest wesoly".
+ * "Ala ma kota".</cite>
+<cite class="in">"ktos maluje pokoj na zielono".</cite>
+<cite class="in">"kot Ali jest wesoly"?</cite>
+<cite class="out">PRAWDA</cite>
+</pre>
+
+</body>
