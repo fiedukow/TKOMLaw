@@ -37,7 +37,7 @@
 
 <h2>Formalna specyfikacja języka wejściowego (EBNF)</h2>
 <pre>
-WEJSCIE = ZDANIE | ZDANIE, WEJSCIE;
+WEJSCIE = {ZDANIE};
 ZDANIE = ZDANIE_TWIERDZACE | REGULA | PYTANIE | WYSZUKIWANIE;
 REGULA = "Jesli ", ZDANIE_TWIERDZACE, " to ", ZDANIE_PROSTE, ".";
 ZDANIE_TWIERDZACE = SUMA_LOGICZNA, "."
@@ -66,7 +66,7 @@ ZNAK_ALFABETU = ^" | '\"'
 <ul>
 	<li>
 		Jeśli zdanie <strong>Z</strong> jest zdaniem twierdzącym lub regułą i <strong>nie</strong> stoi w sprzeczności
-		z załadowanymi faktami zostanie wyprowadzona linia:
+		z załadowanymi faktami (a także nie jest włączona opcja -q) zostanie wyprowadzona linia:
 		<pre>Zdanie: <strong>Z</strong> zostało dodane do bazy wiedzy.</pre>
 	</li>
 	<li>
@@ -111,7 +111,7 @@ sprawdzenie, czy dane zdanie jest zgodne z prawdą, czy nie przez przeanalizowan
 <li>Wyszukiwać zapisy prawa zawierające odniesienie do określonych predykatów
 <p>W ramach tego wymagania aplikacja powinna przetwarzać zapytania wyszukujące użytkownika do formy umożliwiającej
 przeszukanie struktury bazy wiedzy w poszukiwaniu wystąpień danego predykatu.
-Struktura bazy wiedzy musi także umożliwać wyszukiwanie listy zdań zawierających dany predykat.</p>
+Struktura bazy wiedzy musi umożliwać wyszukiwanie listy zdań zawierających dany predykat.</p>
 </li>
 <li>Analizować fakty dt. sprawy i konfrontować je z aktami prawnymi.</li>
 <p>W ramach tego wymagania aplikacja powinna analizować zdania twierdzące podawane na standardowe wejście i dołączać
@@ -135,9 +135,11 @@ taką właściwość.</p>
 <h1>Zarys struktury aplikacji</h1>
 <p>Aplikacja składać będzie się z trzech podstawowych modułów oraz modułu wejścia wyjścia (interface użytkownika)</p>
 <h2>Interpreter</h2>
-<p>Zdaniem interpretera jest przetwarzanie otrzymanych z modułu wejścia wyjścia zdań na wywołania metod bazy
+<p>Zadaniem interpretera jest przetwarzanie otrzymanych z modułu wejścia wyjścia zdań na wywołania metod bazy
 wiedzy lub modułu wnioskującego, w szczególności dodawanie nowych zdań do bazy wiedzy i wywołanie zapytania na module
 wnioskującym.
+</p>
+<p>
 Interpreter posiada interfejs pozwalający na:
 <ul>
 <li>Podanie nowego zdania z wejścia do poddania analizie.</li>
@@ -147,7 +149,7 @@ Interpreter posiada interfejs pozwalający na:
 <p>Jest to moduł odpowiedzialny za przechowywanie w odpowiedniej strukturze dotychczas wprowadzonych faktów
 a także przyjmowanie nowych faktów i dodawanie ich do tej struktury.
 Struktura ta ma charakter listy drzew, z których każde ma w węzłach niebędących liśćmi operatory logiczne
-a w liściach predykaty. Możliwe operatory logiczne to <cite>implikacja</cite>, <cite>lub</cite>, <cite>i</cite>.
+a w liściach predykaty. Możliwe operatory logiczne to <cite>implikacja</cite>, <cite>lub</cite>, <cite>i</cite>
 oraz <cite>zaprzeczenie</cite>.
 </p>
 <p>
@@ -158,8 +160,9 @@ Baza wiedzy udostępnia interfejs pozwalający na:
 <li>Dodawnie nowych faktów.</li>
 </ul>
 <h2>Moduł wnioskujący</h2>
-<p>Moduł wnioskujący posiada algorytmy pozwajające na odpowiadanie na zapytania użytkownika a także 
-na wyszukanie sprzeczności wprowadzonego zdanie z innymi zdaniami w bazie wiedzy.
+<p>Moduł wnioskujący posiada algorytmy pozwalające na odpowiadanie na zapytania użytkownika a także 
+na wyszukanie sprzeczności wprowadzonego zdanie z innymi zdaniami w bazie wiedzy. Moduł wnioskujący musi
+także w ramach swoich alorytmów potrafić wykrywać tautologie oraz zdania zawsze fałszywe.
 </p>
 <p>
 Moduł wnisokujący udostępnia interfejs pozwalający na:
@@ -181,7 +184,7 @@ Moduł wejścia wyjścia udostępnia interfejs pozwalający na:
 <li>Wyprowadzanie komunikatów na standardowe wyjście wedle posiadanych wzorców.</li>
 </ul>
 </p>
-
+<div class="PageSeparator"></div>
 <h1>Przykładowe wejścia i wyjścia</h1>
 <h2>Przykład 1 (wycinka drzew)</h2>
 <pre>
@@ -230,5 +233,12 @@ Moduł wejścia wyjścia udostępnia interfejs pozwalający na:
 <cite class="in">"kot Ali jest wesoly"?</cite>
 <cite class="out">PRAWDA</cite>
 </pre>
+
+<h2>Legenda</h2>
+<ul>
+<li class="in">Standardowe wejscie</li>
+<li class="out">Standardowe wyjscie</li>
+<li class="outq">Standardowe wyjscie (gdy uruchomiono bez -q)</li>
+</ul>
 
 </body>
