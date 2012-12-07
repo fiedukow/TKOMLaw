@@ -84,7 +84,7 @@ NIE WIADOMO
 	</li>
 	<li>
 		Jeśli zdanie <strong>Z</strong> jest wyszukaniem to aplikacja odpowiada na nie wyprowadzając listę zdań zawierająch predykat
-		którego wyszukania zarządał użytkownik:
+		którego wyszukania zażądał użytkownik:
 		<pre>
 <cite>Zdanie <strong>Z</strong> pojawia się w następujących kontekstach
  * Z1
@@ -119,7 +119,7 @@ je do bazy wiedzy.
 </p>
 <li>Wychwytywać próbę wprowadzenia sprzecznych faktów i informować o tym zdarzeniu użytkownika.</h1>
 <p>W ramach tego wymagania, aplikacja przed dodaniem kolejnego zdania do bazy wiedzy powinna przeanalizować, czy owo zdanie
-nie stoi w jakiś sposób w sprzeczności z dotąd zapisanymi w bazie wiedzy faktami. Jeśli aplikacja wykryje taką sytuację
+nie stoi w sprzeczności z dotąd zapisanymi w bazie wiedzy faktami. Jeśli aplikacja wykryje taką sytuację
 nie powinna dodawać nowego faktu do bazy wiedzy, ale powinna wyprowadzić na wyjście odpowiednią informację.</p>
 </ul>
 
@@ -174,8 +174,8 @@ Moduł wnisokujący udostępnia interfejs pozwalający na:
 <h2>Moduł wejścia/wyjścia</h2>
 <p>
 Moduł ten obsługuje dostęp do standardowego wejścia i wyjścia.
-Wczytuje kolejne linie wejścia po każdą z nich przekazując do interpretera w celu analizy.
-Moduł zawiera definicję parametryzowanlych komunikatów wyjsciowych, które pozostałe moduły
+Wczytuje kolejne linie wejścia każdą z nich przekazując do interpretera w celu analizy.
+Moduł zawiera definicję parametryzowalnych komunikatów wyjsciowych, które pozostałe moduły
 mogą wyprowadzac na wyjście.
 </p>
 <p>
