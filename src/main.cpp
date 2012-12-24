@@ -38,7 +38,14 @@ int main()
   getline(std::cin, inputLine);  
   do {
     const char* begin = inputLine.c_str();
-    bool result = parse(begin, begin + std::strlen(begin), "Jesli " >> lexeme['"' >> +(char_ - '"') >> '"'][&show_string] >> " to " >> (lexeme['"' >> +(char_ - '"') >> '"'])[&show_string] >> '.');    
+    bool result = parse(begin,
+                        begin + std::strlen(begin),
+                        "Jesli " >>
+                        lexeme['"' >> +(char_ - '"') >> '"'][&show_string] >>
+                        " to " >> 
+                        (lexeme['"' >> +(char_ - '"') >> '"'])[&show_string]
+                        >> '.');
+
     std::cout << (result ? "OK" : "BAD") << std::endl;
     getline(std::cin, inputLine);  
   } while (inputLine != "");
