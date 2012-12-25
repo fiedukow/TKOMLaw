@@ -72,14 +72,14 @@ struct TKOMLawGrammar : public qi::grammar<Iterator, InputStruct()>
 
     zdanie = 
       (
-        (zdanie_twierdzace)[&show_str]
+        (zdanie_twierdzace)
         |
-        (regula)[&show_str]
+        (regula)
       );
 
     regula =
       (
-        qi::string("Jesli ") >>
+        qi::string("Jesli ")[at_c<1>(_val) = LogicOperator::IMPL] >>
         suma_logiczna >> 
         qi::string(" to ") >>
         zdanie_proste >>
@@ -89,14 +89,14 @@ struct TKOMLawGrammar : public qi::grammar<Iterator, InputStruct()>
     zdanie_twierdzace =
       (
         suma_logiczna >>
-        "."
+        qi::string(".")[at_c<1>(_val) = LogicOperator::IMPL]
       );
 
     suma_logiczna =
       (
         ( 
           iloczyn_logiczny >> 
-          " lub " >>
+          qi::string(" lub ") >>
           suma_logiczna
         )
         |
@@ -137,8 +137,8 @@ struct TKOMLawGrammar : public qi::grammar<Iterator, InputStruct()>
   }
 
   qi::rule<Iterator, InputStruct()> zdanie;
-  qi::rule<Iterator, std::string()> regula;
-  qi::rule<Iterator, std::string()> zdanie_twierdzace;
+  qi::rule<Iterator, InputStruct()> regula;
+  qi::rule<Iterator, InputStruct()> zdanie_twierdzace;
   qi::rule<Iterator, std::string()> suma_logiczna;
   qi::rule<Iterator, std::string()> iloczyn_logiczny;
   qi::rule<Iterator, std::string()> zdanie_proste;
