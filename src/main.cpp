@@ -29,7 +29,6 @@ using namespace boost::spirit;
 using namespace boost;
 
 enum class LogicOperator { NONE, NOT, AND, IMPL, OR };
-enum class SetenceType { RULE, CLAIM, QUESTION, SEARCH };
 std::map<LogicOperator, std::string> logicOperatorMap()
 {
   std::map<LogicOperator, std::string> result;
@@ -41,6 +40,18 @@ std::map<LogicOperator, std::string> logicOperatorMap()
   return result;
 }
 /*const*/ std::map<LogicOperator, std::string> LoToStr = logicOperatorMap();
+
+
+enum class SentenceType { RULE, CLAIM, QUESTION, SEARCH };
+std::map<SentenceType, std::string> setenceTypeMap()
+{
+  std::map<SentenceType, std::string> result;
+  result[SentenceType::RULE] = "RULE";
+  result[SentenceType::CLAIM] = "CLAIM";
+  result[SentenceType::QUESTION] = "QUESTION";
+  result[SentenceType::SEARCH] = "SEARCH";
+  return result;
+}
 
 struct InputStruct
 {
