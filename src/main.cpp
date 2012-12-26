@@ -1,120 +1,13 @@
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix.hpp>
-#include <boost/fusion/include/adapt_struct.hpp>
 
 #include <iostream>
 #include <string>
-#include <vector>
-#include <list>
-#include <map>
+
+#include "InputStruct.h"
 
 using namespace boost::spirit;
 using namespace boost;
-
-enum class LogicOperator { NONE, NOT, AND, IMPL, OR };
-std::map<LogicOperator, std::string> logicOperatorMap()
-{
-  std::map<LogicOperator, std::string> result;
-  result[LogicOperator::NONE] = "NONE";
-  result[LogicOperator::NOT] = "NOT";
-  result[LogicOperator::AND] = "AND";
-  result[LogicOperator::IMPL] = "IMPL";
-  result[LogicOperator::OR] = "OR";
-  return result;
-}
-/*const*/ std::map<LogicOperator, std::string> LoToStr = logicOperatorMap();
-
-
-enum class SentenceType { NONE, RULE, CLAIM, QUESTION, SEARCH };
-std::map<SentenceType, std::string> sentenceTypeMap()
-{
-  std::map<SentenceType, std::string> result;
-  result[SentenceType::NONE] = "NONE";
-  result[SentenceType::RULE] = "RULE";
-  result[SentenceType::CLAIM] = "CLAIM";
-  result[SentenceType::QUESTION] = "QUESTION";
-  result[SentenceType::SEARCH] = "SEARCH";
-  return result;
-}
-/*const*/ std::map<SentenceType, std::string> StToStr = sentenceTypeMap();
-
-struct InputStruct
-{
-  InputStruct(const std::vector<char>& s)
-    : InputStruct()
-  {
-    text = std::string(s.begin(), s.end());
-  }
-
-  InputStruct()
-    : st(SentenceType::NONE),
-      op(LogicOperator::NONE)
-  {}
-  
-  void print(int tab = 0)
-  {
-    tabs(tab);
-    std::cout << "*** BEGIN ***" << std::endl;
-    if(st != SentenceType::NONE)
-    {
-      tabs(tab);
-      std::cout << "SENTENCE_TYPE = " << StToStr[st] << std::endl;
-    }
-    if(op != LogicOperator::NONE)
-    {
-      tabs(tab);
-      std::cout << "OPERATOR = " << LoToStr[op] << std::endl;
-    }
-    if(text != "")
-    {
-      tabs(tab);
-      std::cout << "TEXT = " << text << std::endl;
-    }
-    if(childs.size() > 0)
-    {
-      tabs(tab);
-      std::cout << "Dzieci " << childs.size() << ":" << std::endl;
-      tabs(tab);
-      std::cout << "{" << std::endl;
-      for(auto is : childs)
-        is.print(tab + 1);
-      tabs(tab);
-      std::cout << "}" << std::endl; 
-    }
-    tabs(tab);
-    std::cout << "*** END ***" << std::endl;
-  }
-
-  static void tabs(int tab)
-  {
-    while(tab--)
-      std::cout << "\t";
-  }
-
-  SentenceType st;
-  std::string text;
-  LogicOperator op;
-  std::list<InputStruct> childs;
-};
-
-BOOST_FUSION_ADAPT_STRUCT(
-    InputStruct,
-    (SentenceType, st)
-    (std::string, text)
-    (LogicOperator, op)
-    (std::list<InputStruct>, childs)
-)
-
-void show_string(const std::vector<char>& s)
-{
-  std::string thisstring(s.begin(), s.end());
-  std::cout << "Zdanie: " << thisstring << std::endl;
-}
-
-void show_str(const std::string& s)
-{
-  std::cout << "Reg: " << s << std::endl;
-}
 
 template <typename Iterator>
 struct TKOMLawGrammar : public qi::grammar<Iterator, InputStruct()>
