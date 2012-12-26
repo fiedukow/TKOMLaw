@@ -57,31 +57,55 @@ std::map<SentenceType, std::string> sentenceTypeMap()
 
 struct InputStruct
 {
-  InputStruct(const std::string& v)
-    : text(v)//TODO op(NONE)
-  {}  
-
   InputStruct(const std::vector<char>& s)
+    : InputStruct()
   {
     text = std::string(s.begin(), s.end());
   }
 
   InputStruct()
+    : st(SentenceType::NONE),
+      op(LogicOperator::NONE)
   {}
   
-  void print()
+  void print(int tab = 0)
   {
-    std::cout << "SENTENCE_TYPE = " << StToStr[st] << std::endl;
-    std::cout << "OPERATOR = " << LoToStr[op] << std::endl;
-    std::cout << "TEXT = " << text << std::endl;
-    std::cout << "Dzieci " << childs.size() << ":" << std::endl;
+    tabs(tab);
+    std::cout << "*** BEGIN ***" << std::endl;
+    if(st != SentenceType::NONE)
+    {
+      tabs(tab);
+      std::cout << "SENTENCE_TYPE = " << StToStr[st] << std::endl;
+    }
+    if(op != LogicOperator::NONE)
+    {
+      tabs(tab);
+      std::cout << "OPERATOR = " << LoToStr[op] << std::endl;
+    }
+    if(text != "")
+    {
+      tabs(tab);
+      std::cout << "TEXT = " << text << std::endl;
+    }
     if(childs.size() > 0)
     {
+      tabs(tab);
+      std::cout << "Dzieci " << childs.size() << ":" << std::endl;
+      tabs(tab);
       std::cout << "{" << std::endl;
       for(auto is : childs)
-        is.print();
+        is.print(tab + 1);
+      tabs(tab);
       std::cout << "}" << std::endl; 
     }
+    tabs(tab);
+    std::cout << "*** END ***" << std::endl;
+  }
+
+  static void tabs(int tab)
+  {
+    while(tab--)
+      std::cout << "\t";
   }
 
   SentenceType st;
