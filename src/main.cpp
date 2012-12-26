@@ -79,13 +79,15 @@ struct InputStruct
     std::cout << "}" << std::endl; 
   }
 
+  SentenceType st;
   std::string text;
   LogicOperator op;
-  std::list<InputStruct> childs;  
+  std::list<InputStruct> childs;
 };
 
 BOOST_FUSION_ADAPT_STRUCT(
     InputStruct,
+    (SentenceType, st)
     (std::string, text)
     (LogicOperator, op)
     (std::list<InputStruct>, childs)
@@ -118,14 +120,18 @@ struct TKOMLawGrammar : public qi::grammar<Iterator, InputStruct()>
         (zdanie_twierdzace)[_val=_1]
         |
         (regula)[_val=_1]
+        |
+        (pytanie)[_val=_1]
+        |
+        (wyszukiwanie)[_val=_1]
       );
 
     regula =
       (
         qi::string("Jesli ") >>
-        suma_logiczna [push_back(at_c<2>(_val), _1)] >> 
-        qi::string(" to ") [at_c<1>(_val) = LogicOperator::IMPL] >>
-        zdanie_proste [push_back(at_c<2>(_val), _1)] >>
+        suma_logiczna [push_back(at_c<3>(_val), _1)] >> 
+        qi::string(" to ") [at_c<2>(_val) = LogicOperator::IMPL] >>
+        zdanie_proste [push_back(at_c<3>(_val), _1)] >>
         qi::string(".")
       );
     
@@ -135,12 +141,25 @@ struct TKOMLawGrammar : public qi::grammar<Iterator, InputStruct()>
         qi::string(".")
       );
 
+    pytanie =
+      (
+        zdanie_proste[_val=_1] >>
+        qi::string("?")
+      );
+
+    wyszukiwanie =
+      (
+        qi::string("Co wiesz o ") >>
+        zdanie_jezykowe[_val=_1] >>
+        qi::string("?")
+      );
+
     suma_logiczna =
       (
         ( 
-          iloczyn_logiczny[push_back(at_c<2>(_val), _1)] >> 
-          qi::string(" lub ")[at_c<1>(_val) = LogicOperator::OR] >>
-          suma_logiczna[push_back(at_c<2>(_val), _1)]
+          iloczyn_logiczny[push_back(at_c<3>(_val), _1)] >> 
+          qi::string(" lub ")[at_c<2>(_val) = LogicOperator::OR] >>
+          suma_logiczna[push_back(at_c<3>(_val), _1)]
         )
         |
         (
@@ -151,9 +170,9 @@ struct TKOMLawGrammar : public qi::grammar<Iterator, InputStruct()>
     iloczyn_logiczny =
       (
         (
-          zdanie_proste [push_back(at_c<2>(_val), _1)] >>
-          qi::string(" i ") [at_c<1>(_val) = LogicOperator::AND] >>
-          iloczyn_logiczny [push_back(at_c<2>(_val), _1)] 
+          zdanie_proste [push_back(at_c<3>(_val), _1)] >>
+          qi::string(" i ") [at_c<2>(_val) = LogicOperator::AND] >>
+          iloczyn_logiczny [push_back(at_c<3>(_val), _1)] 
         )
         |
         (
@@ -164,8 +183,8 @@ struct TKOMLawGrammar : public qi::grammar<Iterator, InputStruct()>
     zdanie_proste =
       (
         (
-          qi::string("nie ") [at_c<1>(_val) = LogicOperator::NOT] >>
-          zdanie_proste [push_back(at_c<2>(_val), _1)]
+          qi::string("nie ") [at_c<2>(_val) = LogicOperator::NOT] >>
+          zdanie_proste [push_back(at_c<3>(_val), _1)]
         )
         |
         (
@@ -182,6 +201,8 @@ struct TKOMLawGrammar : public qi::grammar<Iterator, InputStruct()>
   qi::rule<Iterator, InputStruct()> zdanie;
   qi::rule<Iterator, InputStruct()> regula;
   qi::rule<Iterator, InputStruct()> zdanie_twierdzace;
+  qi::rule<Iterator, InputStruct()> pytanie;
+  qi::rule<Iterator, InputStruct()> wyszukiwanie;
   qi::rule<Iterator, InputStruct()> suma_logiczna;
   qi::rule<Iterator, InputStruct()> iloczyn_logiczny;
   qi::rule<Iterator, InputStruct()> zdanie_proste;
