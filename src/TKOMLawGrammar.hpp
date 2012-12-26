@@ -49,7 +49,7 @@ struct TKOMLawGrammar : public spirit::qi::grammar<Iterator, InputStruct()>
 
     pytanie =
       (
-        zdanie_proste[_val=_1] >>
+        suma_logiczna[_val=_1] >>
         qi::string("?")
       );
 

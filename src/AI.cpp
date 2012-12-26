@@ -47,6 +47,20 @@ AI::Answer operator&&(AI::Answer f, AI::Answer s)
   return AI::Answer::DK;
 }
 
+AI::Answer operator^(AI::Answer f, AI::Answer s)
+{
+  if(f == AI::Answer::YES && s == AI::Answer::NO)
+    return AI::Answer::YES;
+
+  if(f == AI::Answer::NO && s == AI::Answer::YES)
+    return AI::Answer::YES;
+
+  if(f == s && f != AI::Answer::DK)
+    return AI::Answer::NO;
+
+  return AI::Answer::DK;
+}
+
 
 AI::AI(Knowledge& knowledgeBase)
   : knowledgeBase(knowledgeBase)
@@ -99,19 +113,32 @@ AI::Answer AI::sentenceQuestion(const InputStruct& is)
 
 AI::Answer AI::claimAnswer(const InputStruct& is, const InputStruct& claim)
 {
-  switch(is.op)
+  std::cout << "Claim: ";
+  claim.printInline();
+  std::cout << "Prove: ";
+  is.printInline();
+
+  switch(claim.op)
   {
   case LogicOperator::NONE:
     if(is.text == claim.text)
+    {
+      std::cout << "YES" << std::endl;
       return Answer::YES;
+    }
     else
+    {
+      std::cout << "DK" << std::endl;
       return Answer::DK;
+    }
   case LogicOperator::NOT:
-    return !claimAnswer(is, is.childs.front());
+    return !claimAnswer(is, claim.childs.front());
   case LogicOperator::AND:
-    return (claimAnswer(is, is.childs.front()) || claimAnswer(is, is.childs.back()));
+    return (claimAnswer(is, claim.childs.front())
+            || claimAnswer(is, claim.childs.back()));
   case LogicOperator::OR:
-    return !(!claimAnswer(is, is.childs.front()) || !claimAnswer(is, is.childs.back()));
+    return (claimAnswer(is, claim.childs.front())
+           ^ claimAnswer(is, claim.childs.back()));
   default:
     assert(false);
   }
