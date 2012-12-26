@@ -10,3 +10,5 @@ README
 SConstruct
 src/Interpreter.h
 src/Interpreter.cpp
+src/AI.h
+src/AI.cpp
