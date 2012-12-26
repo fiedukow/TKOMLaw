@@ -42,10 +42,11 @@ std::map<LogicOperator, std::string> logicOperatorMap()
 /*const*/ std::map<LogicOperator, std::string> LoToStr = logicOperatorMap();
 
 
-enum class SentenceType { RULE, CLAIM, QUESTION, SEARCH };
+enum class SentenceType { NONE, RULE, CLAIM, QUESTION, SEARCH };
 std::map<SentenceType, std::string> sentenceTypeMap()
 {
   std::map<SentenceType, std::string> result;
+  result[SentenceType::NONE] = "NONE";
   result[SentenceType::RULE] = "RULE";
   result[SentenceType::CLAIM] = "CLAIM";
   result[SentenceType::QUESTION] = "QUESTION";
@@ -70,13 +71,17 @@ struct InputStruct
   
   void print()
   {
+    std::cout << "SENTENCE_TYPE = " << StToStr[st] << std::endl;
     std::cout << "OPERATOR = " << LoToStr[op] << std::endl;
     std::cout << "TEXT = " << text << std::endl;
     std::cout << "Dzieci " << childs.size() << ":" << std::endl;
-    std::cout << "{" << std::endl;
-    for(auto is : childs)
-      is.print();
-    std::cout << "}" << std::endl; 
+    if(childs.size() > 0)
+    {
+      std::cout << "{" << std::endl;
+      for(auto is : childs)
+        is.print();
+      std::cout << "}" << std::endl; 
+    }
   }
 
   SentenceType st;
@@ -117,13 +122,13 @@ struct TKOMLawGrammar : public qi::grammar<Iterator, InputStruct()>
 
     zdanie = 
       (
-        (zdanie_twierdzace)[_val=_1]
+        (zdanie_twierdzace)[_val=_1, at_c<0>(_val) = SentenceType::CLAIM]
         |
-        (regula)[_val=_1]
+        (regula)[_val=_1, at_c<0>(_val) = SentenceType::RULE]
         |
-        (pytanie)[_val=_1]
+        (pytanie)[_val=_1, at_c<0>(_val) = SentenceType::QUESTION]
         |
-        (wyszukiwanie)[_val=_1]
+        (wyszukiwanie)[_val=_1, at_c<0>(_val) = SentenceType::SEARCH]
       );
 
     regula =
