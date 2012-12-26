@@ -1,6 +1,7 @@
 #pragma once
 #ifndef _INPUTSTRUCT_H_
 #define _INPUTSTRUCT_H_
+
 #include <string>
 #include <list>
 #include <vector>

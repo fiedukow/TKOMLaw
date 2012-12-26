@@ -1,6 +1,6 @@
-#include "InputStruct.h"
 #include <iostream>
 
+#include "InputStruct.h"
 
 /*const*/ std::map<LogicOperator, std::string> LoToStr = logicOperatorMap();
 /*const*/ std::map<SentenceType, std::string> StToStr = sentenceTypeMap();
