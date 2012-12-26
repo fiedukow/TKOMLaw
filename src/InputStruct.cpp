@@ -54,6 +54,14 @@ bool InputStruct::containsSentence(const std::string& sentence) const
   return false;
 }
 
+std::string InputStruct::getTextFromSimpleSentence() const
+{
+  const InputStruct* current = this;
+  while(current->op == LogicOperator::NOT)
+    current = &(current->childs.front());
+  return current->text;
+}
+
 void InputStruct::print(int tab) const
 {
   tabs(tab);

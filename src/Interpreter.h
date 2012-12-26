@@ -23,7 +23,7 @@ public:
   bool parseLine(std::string toParse);
 
 private:
-  bool unknownTypeAction(InputStruct& is);
+  bool unknownTypeAction(InputStruct& /*is*/);
   bool ruleAction(InputStruct& is);
   bool claimAction(InputStruct& is);
   bool questionAction(InputStruct& is);

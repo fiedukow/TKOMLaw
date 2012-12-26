@@ -5,8 +5,11 @@
 #include "InputStruct.h"
 #include "TKOMLawGrammar.hpp"
 #include "Knowledge.h"
+#include "AI.h"
 
 using namespace boost;
+
+/*const*/ std::map<AI::Answer, std::string> AnsToStr = answerMap();
 
 Interpreter::Interpreter(Knowledge& knowledgeBase)
   : actionMap(createActionMap()),
@@ -50,7 +53,7 @@ bool Interpreter::parseLine(std::string toParse)
   return true;
 }
 
-bool Interpreter::unknownTypeAction(InputStruct& is)
+bool Interpreter::unknownTypeAction(InputStruct& /*is*/)
 {
   assert(false);
 }
@@ -72,6 +75,8 @@ bool Interpreter::claimAction(InputStruct& is)
 bool Interpreter::questionAction(InputStruct& is)
 {
   std::cout << "I will answer later." << std::endl;
+  AI ai(knowledgeBase);
+  std::cout << AnsToStr[ai.question(is)] << std::endl;
   return true;
 }
 

@@ -18,6 +18,7 @@ struct InputStruct
   InputStruct();
 
   bool containsSentence(const std::string& sentence) const;
+  std::string getTextFromSimpleSentence() const;
 
   void print(int tab = 0) const;
   void printInline(bool newline = true) const;
