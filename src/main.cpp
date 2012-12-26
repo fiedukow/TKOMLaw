@@ -29,6 +29,7 @@ using namespace boost::spirit;
 using namespace boost;
 
 enum class LogicOperator { NONE, NOT, AND, IMPL, OR };
+enum class SetenceType { RULE, CLAIM, QUESTION, SEARCH };
 std::map<LogicOperator, std::string> logicOperatorMap()
 {
   std::map<LogicOperator, std::string> result;
@@ -44,7 +45,7 @@ std::map<LogicOperator, std::string> logicOperatorMap()
 struct InputStruct
 {
   InputStruct(const std::string& v)
-    : text(v)
+    : text(v)//TODO op(NONE)
   {}  
 
   InputStruct(const std::vector<char>& s)
@@ -104,15 +105,15 @@ struct TKOMLawGrammar : public qi::grammar<Iterator, InputStruct()>
       (
         (zdanie_twierdzace)[_val=_1]
         |
-        (regula)
+        (regula)[_val=_1]
       );
 
     regula =
       (
-        qi::string("Jesli ")[at_c<1>(_val) = LogicOperator::IMPL] >>
-        suma_logiczna >> 
-        qi::string(" to ") >>
-        zdanie_proste >>
+        qi::string("Jesli ") >>
+        suma_logiczna [push_back(at_c<2>(_val), _1)] >> 
+        qi::string(" to ") [at_c<1>(_val) = LogicOperator::IMPL] >>
+        zdanie_proste [push_back(at_c<2>(_val), _1)] >>
         qi::string(".")
       );
     
@@ -125,9 +126,9 @@ struct TKOMLawGrammar : public qi::grammar<Iterator, InputStruct()>
     suma_logiczna =
       (
         ( 
-          iloczyn_logiczny >> 
-          qi::string(" lub ") >>
-          suma_logiczna
+          iloczyn_logiczny[push_back(at_c<2>(_val), _1)] >> 
+          qi::string(" lub ")[at_c<1>(_val) = LogicOperator::OR] >>
+          suma_logiczna[push_back(at_c<2>(_val), _1)]
         )
         |
         (
