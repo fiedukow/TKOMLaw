@@ -17,71 +17,72 @@ struct TKOMLawGrammar : public spirit::qi::grammar<Iterator, InputStruct()>
   {
     using ascii::char_;
     using qi::_val;
+    using qi::_1;
     using phoenix::at_c;
     using phoenix::push_back;
 
     zdanie =
       (
-        (zdanie_twierdzace)[_val=qi::_1, at_c<0>(_val) = SentenceType::CLAIM]
+        (zdanie_twierdzace)[_val=_1, at_c<0>(_val) = SentenceType::CLAIM]
         |
-        (regula)[_val=qi::_1, at_c<0>(_val) = SentenceType::RULE]
+        (regula)[_val=_1, at_c<0>(_val) = SentenceType::RULE]
         |
-        (pytanie)[_val=qi::_1, at_c<0>(_val) = SentenceType::QUESTION]
+        (pytanie)[_val=_1, at_c<0>(_val) = SentenceType::QUESTION]
         |
-        (wyszukiwanie)[_val=qi::_1, at_c<0>(_val) = SentenceType::SEARCH]
+        (wyszukiwanie)[_val=_1, at_c<0>(_val) = SentenceType::SEARCH]
       );
 
     regula =
       (
         qi::string("Jesli ") >>
-        suma_logiczna [push_back(at_c<3>(_val), qi::_1)] >>
+        suma_logiczna [push_back(at_c<3>(_val), _1)] >>
         qi::string(" to ") [at_c<2>(_val) = LogicOperator::IMPL] >>
-        zdanie_proste [push_back(at_c<3>(_val), qi::_1)] >>
+        zdanie_proste [push_back(at_c<3>(_val), _1)] >>
         qi::string(".")
       );
 
     zdanie_twierdzace =
       (
-        suma_logiczna[_val=qi::_1] >>
+        suma_logiczna[_val=_1] >>
         qi::string(".")
       );
 
     pytanie =
       (
-        zdanie_proste[_val=qi::_1] >>
+        zdanie_proste[_val=_1] >>
         qi::string("?")
       );
 
     wyszukiwanie =
       (
         qi::string("Co wiesz o ") >>
-        zdanie_jezykowe[_val=qi::_1] >>
+        zdanie_jezykowe[_val=_1] >>
         qi::string("?")
       );
 
     suma_logiczna =
       (
         (
-          iloczyn_logiczny[push_back(at_c<3>(_val), qi::_1)] >>
+          iloczyn_logiczny[push_back(at_c<3>(_val), _1)] >>
           qi::string(" lub ")[at_c<2>(_val) = LogicOperator::OR] >>
-          suma_logiczna[push_back(at_c<3>(_val), qi::_1)]
+          suma_logiczna[push_back(at_c<3>(_val), _1)]
         )
         |
         (
-          iloczyn_logiczny[_val=qi::_1]
+          iloczyn_logiczny[_val=_1]
         )
       );
 
     iloczyn_logiczny =
       (
         (
-          zdanie_proste [push_back(at_c<3>(_val), qi::_1)] >>
+          zdanie_proste [push_back(at_c<3>(_val), _1)] >>
           qi::string(" i ") [at_c<2>(_val) = LogicOperator::AND] >>
-          iloczyn_logiczny [push_back(at_c<3>(_val), qi::_1)]
+          iloczyn_logiczny [push_back(at_c<3>(_val), _1)]
         )
         |
         (
-          zdanie_proste[_val=qi::_1]
+          zdanie_proste[_val=_1]
         )
       );
 
@@ -89,17 +90,17 @@ struct TKOMLawGrammar : public spirit::qi::grammar<Iterator, InputStruct()>
       (
         (
           qi::string("nie ") [at_c<2>(_val) = LogicOperator::NOT] >>
-          zdanie_proste [push_back(at_c<3>(_val), qi::_1)]
+          zdanie_proste [push_back(at_c<3>(_val), _1)]
         )
         |
         (
-          zdanie_jezykowe[_val=qi::_1]
+          zdanie_jezykowe[_val=_1]
         )
       );
 
     zdanie_jezykowe =
       (
-        lexeme['"' >> +(char_ - '"') >> '"'][_val=qi::_1]
+        lexeme['"' >> +(char_ - '"') >> '"'][_val=_1]
       );
   }
 
