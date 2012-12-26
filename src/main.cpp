@@ -2,11 +2,14 @@
 #include <string>
 
 #include "Interpreter.h"
+#include "Knowledge.h"
 
 int main()
 {
   std::string inputLine;
-  Interpreter& interpreter = Interpreter::getInstance();
+  Knowledge bazaWiedzy;
+  Interpreter interpreter(bazaWiedzy);
+
   getline(std::cin, inputLine);
   do {
     interpreter.parseLine(inputLine);
