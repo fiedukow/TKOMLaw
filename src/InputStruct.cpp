@@ -59,6 +59,9 @@ std::string InputStruct::getTextFromSimpleSentence() const
   const InputStruct* current = this;
   while(current->op == LogicOperator::NOT)
     current = &(current->childs.front());
+
+  assert(current->op == LogicOperator::NONE);
+
   return current->text;
 }
 

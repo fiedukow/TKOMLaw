@@ -1,4 +1,5 @@
 #include <cassert>
+#include <iostream>
 
 #include "AI.h"
 
@@ -72,13 +73,14 @@ AI::Answer AI::question(const InputStruct& is)
 AI::Answer AI::sentenceQuestion(const InputStruct& is)
 {
   assert(is.op == LogicOperator::NONE);
+
   FactList facts = knowledgeBase.findBySentence(is.text);
   for(FactList::const_iterator i = facts.begin(); i != facts.end(); ++i)
   {
     const InputStruct& currFact = *i;
     if(currFact.st == SentenceType::RULE)
     {
-      if(currFact.getTextFromSimpleSentence() == is.text)
+      if(currFact.childs.back().getTextFromSimpleSentence() == is.text)
       {
         Answer ans = question(currFact.childs.front());
         if(ans != Answer::DK)

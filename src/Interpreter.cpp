@@ -44,13 +44,7 @@ bool Interpreter::parseLine(std::string toParse)
   if(!r)
     return false; /*parsing failor*/
 
-//  parsed.print();
-  actionMap[parsed.st](parsed);
-
-  /*
-   * Do sth with parsed InputStruct
-   */
-  return true;
+  return actionMap[parsed.st](parsed);
 }
 
 bool Interpreter::unknownTypeAction(InputStruct& /*is*/)
@@ -74,7 +68,7 @@ bool Interpreter::claimAction(InputStruct& is)
 
 bool Interpreter::questionAction(InputStruct& is)
 {
-  std::cout << "I will answer later." << std::endl;
+  std::cout << "The answer is: ";
   AI ai(knowledgeBase);
   std::cout << AnsToStr[ai.question(is)] << std::endl;
   return true;
