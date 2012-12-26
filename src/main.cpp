@@ -1,26 +1,14 @@
 #include <boost/config/warning_disable.hpp>
 #include <boost/spirit/include/qi.hpp>
-#include <boost/lambda/lambda.hpp>
-#include <boost/spirit/include/qi_and_predicate.hpp>
-#include <boost/spirit/include/qi_hold.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
-#include <boost/spirit/include/phoenix.hpp>
-#include <boost/spirit/include/qi_repeat.hpp>
-#include <boost/fusion/tuple.hpp>
-#include <boost/config/warning_disable.hpp>
-#include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix_core.hpp>
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/spirit/include/phoenix_fusion.hpp>
 #include <boost/spirit/include/phoenix_stl.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
-#include <boost/variant/recursive_variant.hpp>
-#include <boost/foreach.hpp>
 
 
 #include <iostream>
 #include <string>
-#include <cstring>
 #include <vector>
 #include <list>
 #include <map>
