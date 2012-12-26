@@ -23,19 +23,48 @@
 #include <cstring>
 #include <vector>
 #include <list>
+#include <map>
 
 using namespace boost::spirit;
 using namespace boost;
 
-enum class LogicOperator { NOT, AND, IMPL, OR };
+enum class LogicOperator { NONE, NOT, AND, IMPL, OR };
+std::map<LogicOperator, std::string> logicOperatorMap()
+{
+  std::map<LogicOperator, std::string> result;
+  result[LogicOperator::NONE] = "NONE";
+  result[LogicOperator::NOT] = "NOT";
+  result[LogicOperator::AND] = "AND";
+  result[LogicOperator::IMPL] = "IMPL";
+  result[LogicOperator::OR] = "OR";
+  return result;
+}
+/*const*/ std::map<LogicOperator, std::string> LoToStr = logicOperatorMap();
 
 struct InputStruct
 {
   InputStruct(const std::string& v)
     : text(v)
-  {}
+  {}  
+
+  InputStruct(const std::vector<char>& s)
+  {
+    text = std::string(s.begin(), s.end());
+  }
+
   InputStruct()
   {}
+  
+  void print()
+  {
+    std::cout << "OPERATOR = " << LoToStr[op] << std::endl;
+    std::cout << "TEXT = " << text << std::endl;
+    std::cout << "Dzieci " << childs.size() << ":" << std::endl;
+    std::cout << "{" << std::endl;
+    for(auto is : childs)
+      is.print();
+    std::cout << "}" << std::endl; 
+  }
 
   std::string text;
   LogicOperator op;
@@ -69,10 +98,11 @@ struct TKOMLawGrammar : public qi::grammar<Iterator, InputStruct()>
     using qi::_1;
     using qi::_val;
     using phoenix::at_c;
+    using phoenix::push_back;
 
     zdanie = 
       (
-        (zdanie_twierdzace)
+        (zdanie_twierdzace)[_val=_1]
         |
         (regula)
       );
@@ -88,8 +118,8 @@ struct TKOMLawGrammar : public qi::grammar<Iterator, InputStruct()>
     
     zdanie_twierdzace =
       (
-        suma_logiczna >>
-        qi::string(".")[at_c<1>(_val) = LogicOperator::IMPL]
+        suma_logiczna[_val=_1] >>
+        qi::string(".")
       );
 
     suma_logiczna =
@@ -101,48 +131,48 @@ struct TKOMLawGrammar : public qi::grammar<Iterator, InputStruct()>
         )
         |
         (
-          iloczyn_logiczny
+          iloczyn_logiczny[_val=_1]
         )
       );
 
     iloczyn_logiczny =
       (
         (
-          zdanie_proste >>
-          " i " >>
-          iloczyn_logiczny
+          zdanie_proste [push_back(at_c<2>(_val), _1)] >>
+          qi::string(" i ") [at_c<1>(_val) = LogicOperator::AND] >>
+          iloczyn_logiczny [push_back(at_c<2>(_val), _1)] 
         )
         |
         (
-          zdanie_proste
+          zdanie_proste[_val=_1]
         )
       );
 
     zdanie_proste =
       (
         (
-          "nie " >>
-          zdanie_proste
+          qi::string("nie ") [at_c<1>(_val) = LogicOperator::NOT] >>
+          zdanie_proste [push_back(at_c<2>(_val), _1)]
         )
         |
         (
-          zdanie_jezykowe
+          zdanie_jezykowe[_val=_1]
         )
       );
 
     zdanie_jezykowe =
       (
-        lexeme['"' >> +(char_ - '"') >> '"'][&show_string]
+        lexeme['"' >> +(char_ - '"') >> '"'][_val=_1]
       );
   }
 
   qi::rule<Iterator, InputStruct()> zdanie;
   qi::rule<Iterator, InputStruct()> regula;
   qi::rule<Iterator, InputStruct()> zdanie_twierdzace;
-  qi::rule<Iterator, std::string()> suma_logiczna;
-  qi::rule<Iterator, std::string()> iloczyn_logiczny;
-  qi::rule<Iterator, std::string()> zdanie_proste;
-  qi::rule<Iterator, std::string()> zdanie_jezykowe;
+  qi::rule<Iterator, InputStruct()> suma_logiczna;
+  qi::rule<Iterator, InputStruct()> iloczyn_logiczny;
+  qi::rule<Iterator, InputStruct()> zdanie_proste;
+  qi::rule<Iterator, InputStruct()> zdanie_jezykowe;
 };
 
 typedef TKOMLawGrammar<std::string::iterator> TKOMLawGrammarString;
@@ -167,7 +197,10 @@ int main()
     InputStruct parsed;
     bool result = phrase_parse(inputLine.begin(), inputLine.end(), grammar, space, parsed);
     if(result)
-      std::cout << "Sparsowane " << parsed.text << std::endl;
+    {
+      std::cout << "Sparsowane " << std::endl;
+      parsed.print();
+    } 
     else
       std::cout << ":-(" << std::endl;
     getline(std::cin, inputLine);  
