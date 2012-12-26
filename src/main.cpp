@@ -43,7 +43,7 @@ std::map<LogicOperator, std::string> logicOperatorMap()
 
 
 enum class SentenceType { RULE, CLAIM, QUESTION, SEARCH };
-std::map<SentenceType, std::string> setenceTypeMap()
+std::map<SentenceType, std::string> sentenceTypeMap()
 {
   std::map<SentenceType, std::string> result;
   result[SentenceType::RULE] = "RULE";
@@ -52,6 +52,7 @@ std::map<SentenceType, std::string> setenceTypeMap()
   result[SentenceType::SEARCH] = "SEARCH";
   return result;
 }
+/*const*/ std::map<SentenceType, std::string> StToStr = sentenceTypeMap();
 
 struct InputStruct
 {
