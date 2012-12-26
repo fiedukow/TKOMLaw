@@ -8,3 +8,5 @@ src/SConscript.main
 src/TKOMLawGrammar.hpp
 README
 SConstruct
+src/Interpreter.h
+src/Interpreter.cpp

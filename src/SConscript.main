@@ -1,10 +1,14 @@
 # vim: ft=python
+import os
 
 env = Environment(
                     CXX = 'clang++',
                     CCFLAGS = '-std=c++0x',
                     LINKFLAGS = ''
                  )
+
+env['ENV']['TERM'] = os.environ['TERM']
+
 sourceTargets = Glob('*.cpp')
 
 env.Program('../bin/TKOMLaw',sourceTargets)

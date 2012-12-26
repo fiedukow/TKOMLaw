@@ -21,7 +21,7 @@ struct TKOMLawGrammar : public qi::grammar<Iterator, InputStruct()>
     using phoenix::at_c;
     using phoenix::push_back;
 
-    zdanie = 
+    zdanie =
       (
         (zdanie_twierdzace)[_val=_1, at_c<0>(_val) = SentenceType::CLAIM]
         |
@@ -35,12 +35,12 @@ struct TKOMLawGrammar : public qi::grammar<Iterator, InputStruct()>
     regula =
       (
         qi::string("Jesli ") >>
-        suma_logiczna [push_back(at_c<3>(_val), _1)] >> 
+        suma_logiczna [push_back(at_c<3>(_val), _1)] >>
         qi::string(" to ") [at_c<2>(_val) = LogicOperator::IMPL] >>
         zdanie_proste [push_back(at_c<3>(_val), _1)] >>
         qi::string(".")
       );
-    
+
     zdanie_twierdzace =
       (
         suma_logiczna[_val=_1] >>
@@ -62,8 +62,8 @@ struct TKOMLawGrammar : public qi::grammar<Iterator, InputStruct()>
 
     suma_logiczna =
       (
-        ( 
-          iloczyn_logiczny[push_back(at_c<3>(_val), _1)] >> 
+        (
+          iloczyn_logiczny[push_back(at_c<3>(_val), _1)] >>
           qi::string(" lub ")[at_c<2>(_val) = LogicOperator::OR] >>
           suma_logiczna[push_back(at_c<3>(_val), _1)]
         )
@@ -78,7 +78,7 @@ struct TKOMLawGrammar : public qi::grammar<Iterator, InputStruct()>
         (
           zdanie_proste [push_back(at_c<3>(_val), _1)] >>
           qi::string(" i ") [at_c<2>(_val) = LogicOperator::AND] >>
-          iloczyn_logiczny [push_back(at_c<3>(_val), _1)] 
+          iloczyn_logiczny [push_back(at_c<3>(_val), _1)]
         )
         |
         (
