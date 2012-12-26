@@ -1,0 +1,10 @@
+# vim: ft=python
+
+env = Environment(
+                    CXX = 'clang++',
+                    CCFLAGS = '-std=c++0x',
+                    LINKFLAGS = ''
+                 )
+sourceTargets = Glob('*.cpp')
+
+env.Program('../bin/TKOMLaw',sourceTargets)
