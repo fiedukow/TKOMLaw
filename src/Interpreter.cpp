@@ -41,7 +41,7 @@ bool Interpreter::parseLine(std::string toParse)
   if(!r)
     return false; /*parsing failor*/
 
-  parsed.print();
+//  parsed.print();
   actionMap[parsed.st](parsed);
 
   /*
@@ -77,6 +77,15 @@ bool Interpreter::questionAction(InputStruct& is)
 
 bool Interpreter::searchAction(InputStruct& is)
 {
-  std::cout << "Cant find it :(" << std::endl;
+  std::cout << "Looking for \"" << is.text << "\":" << std::endl;
+  const FactList found = knowledgeBase.findBySentence(is.text);
+  int it = 0;
+  for(FactList::const_iterator i = found.begin(); i != found.end(); ++i)
+  {
+    std::cout << ++it << ". ";
+    i->printInline();
+  }
+  if(found.size() == 0)
+    std::cout << "NOTHING FOUND" << std::endl;
   return true;
 }

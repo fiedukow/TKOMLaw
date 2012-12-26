@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cassert>
 
 #include "InputStruct.h"
 
@@ -38,7 +39,22 @@ InputStruct::InputStruct()
     op(LogicOperator::NONE)
 {}
 
-void InputStruct::print(int tab)
+bool InputStruct::containsSentence(const std::string& sentence) const
+{
+  assert(sentence != "");
+  if(text == sentence)
+    return true;
+
+  for(auto& is : childs)
+  {
+    if(is.containsSentence(sentence))
+      return true;
+  }
+
+  return false;
+}
+
+void InputStruct::print(int tab) const
 {
   tabs(tab);
   std::cout << "*** BEGIN ***" << std::endl;
@@ -63,14 +79,50 @@ void InputStruct::print(int tab)
     std::cout << "Dzieci " << childs.size() << ":" << std::endl;
     tabs(tab);
     std::cout << "{" << std::endl;
-    for(auto is : childs)
+    for(auto& is : childs)
       is.print(tab + 1);
     tabs(tab);
-    std::cout << "}" << std::endl; 
+    std::cout << "}" << std::endl;
   }
   tabs(tab);
   std::cout << "*** END ***" << std::endl;
 }
+
+void InputStruct::printInline(bool newline) const
+{
+  switch(op)
+  {
+    case LogicOperator::NONE:
+      std::cout << '\"' << text << '\"';
+      break;
+    case LogicOperator::NOT:
+      std::cout << "nie ";
+      childs.front().printInline(false);
+      break;
+    case LogicOperator::AND:
+      childs.front().printInline(false);
+      std::cout << " i ";
+      childs.back().printInline(false);
+      break;
+    case LogicOperator::OR:
+      childs.front().printInline(false);
+      std::cout << " lub ";
+      childs.back().printInline(false);
+      break;
+    case LogicOperator::IMPL:
+      std::cout << "Jesli ";
+      childs.front().printInline(false);
+      std::cout << " to ";
+      childs.back().printInline(false);
+      break;
+    default:
+      assert(false);
+  }
+
+  if(newline)
+    std::cout << "." << std::endl;
+}
+
 
 void InputStruct::tabs(int tab)
 {

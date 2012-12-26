@@ -9,10 +9,11 @@ typedef std::list<InputStruct> FactList;
 
 class Knowledge
 {
-public:  
+public:
   void addFact(InputStruct);
   FactList::const_iterator begin() const;
   FactList::const_iterator end() const;
+  FactList findBySentence(const std::string&) const;
 
 private:
   FactList knowledge;

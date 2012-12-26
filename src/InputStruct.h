@@ -16,8 +16,11 @@ struct InputStruct
 {
   InputStruct(const std::vector<char>& s);
   InputStruct();
-  
-  void print(int tab = 0);
+
+  bool containsSentence(const std::string& sentence) const;
+
+  void print(int tab = 0) const;
+  void printInline(bool newline = true) const;
   static void tabs(int tab);
 
   SentenceType st;
