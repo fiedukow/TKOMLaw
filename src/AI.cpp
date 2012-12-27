@@ -80,9 +80,11 @@ AI::Answer AI::question(const InputStruct& is, AnswerStack& stack)
   switch(is.op)
   {
     case LogicOperator::AND:
-      return (question(is.childs.front(), stack) && question(is.childs.back(), stack));
+      return (question(is.childs.front(), stack)
+              && question(is.childs.back(), stack));
     case LogicOperator::OR:
-      return (question(is.childs.front(), stack) || question(is.childs.back(), stack));
+      return (question(is.childs.front(), stack)
+              || question(is.childs.back(), stack));
     case LogicOperator::NOT:
       return !question(is.childs.front(), stack);
     case LogicOperator::NONE:
@@ -167,7 +169,7 @@ AI::Answer AI::claimAnswer(const InputStruct& is,
     //Sprawdzenie rownowaznosci
     {
       TmpFactPusher f(knowledgeBase, claim.childs.front());
-      ans = question(claim.childs.back(), stack);
+      ans = question(is, stack);
     }
     if(ans != Answer::YES)
     {
@@ -177,7 +179,7 @@ AI::Answer AI::claimAnswer(const InputStruct& is,
 
     {
       TmpFactPusher f(knowledgeBase, claim.childs.back());
-      ans = question(claim.childs.front(), stack);
+      ans = question(is, stack);
     }
     //Koniec sprawdzenia rownowaznosci
 
