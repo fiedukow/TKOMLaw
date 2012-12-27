@@ -62,6 +62,18 @@ AI::Answer operator^(AI::Answer f, AI::Answer s)
   return AI::Answer::DK;
 }
 
+AI::Answer anyKnown(AI::Answer f, AI::Answer s)
+{
+  assert(!(f != AI::Answer::DK && s != AI::Answer::DK && f!=s));
+
+  if(f == AI::Answer::YES || s == AI::Answer::YES)
+    return AI::Answer::YES;
+
+  if(f == AI::Answer::NO || s == AI::Answer::NO)
+    return AI::Answer::NO;
+
+  return AI::Answer::DK;
+}
 
 AI::AI(Knowledge& knowledgeBase)
   : knowledgeBase(knowledgeBase)
@@ -193,8 +205,8 @@ AI::Answer AI::claimAnswer(const InputStruct& is,
   case LogicOperator::NOT:
     return !claimAnswer(is, claim.childs.front(), stack);
   case LogicOperator::AND:
-    return (claimAnswer(is, claim.childs.front(), stack)
-            || claimAnswer(is, claim.childs.back(), stack));
+    return anyKnown(claimAnswer(is, claim.childs.front(), stack),
+                    claimAnswer(is, claim.childs.back(), stack));
   case LogicOperator::OR:
     Answer ans;
 
