@@ -129,6 +129,11 @@ AI::Answer AI::question(const InputStruct& is, AnswerStack& stack)
     }
     case LogicOperator::NOT:
       return !question(is.childs.front(), stack);
+    case LogicOperator::IMPL:
+    {
+      TmpFactPusher f(knowledgeBase, is.childs.front());
+      return question(is.childs.back(), stack);
+    }
     case LogicOperator::NONE:
       return sentenceQuestion(is, stack);
     default:
