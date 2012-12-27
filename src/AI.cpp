@@ -107,7 +107,6 @@ AI::Answer AI::sentenceQuestion(const InputStruct& is, AnswerStack& stack)
       if(currFact->childs.back().getTextFromSimpleSentence() == is.text)
       {
         stack.push_back(currFact);
-        std::cout << "Stack " << stack.size() << ", added " << currFact << std::endl;
         Answer ans = question(currFact->childs.front(), stack);
         if(ans != Answer::DK)
           return ans;
