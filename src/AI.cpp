@@ -217,7 +217,7 @@ AI::Answer AI::claimAnswer(const InputStruct& is,
     {
       return ans;
     }
-    stack.push_back(&(claim.childs.back()));
+
     ans = (!question(claim.childs.back(), stack)
            && claimAnswer(is, claim.childs.front(), stack));
     if(ans == Answer::YES)

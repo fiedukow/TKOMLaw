@@ -42,6 +42,7 @@ InputStruct::InputStruct()
 bool InputStruct::containsSentence(const std::string& sentence) const
 {
   assert(sentence != "");
+
   if(text == sentence)
     return true;
 
