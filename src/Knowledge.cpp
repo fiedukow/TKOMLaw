@@ -1,9 +1,17 @@
 #include "Knowledge.h"
+#include "AI.h"
 #include <iostream>
 
-void Knowledge::addFact(InputStruct fact)
+bool Knowledge::addFact(InputStruct fact)
 {
-  knowledge.push_back(fact);
+  AI ai(*this);
+  if(ai.ask(fact) != AI::Answer::NO)
+  {
+    knowledge.push_back(fact);
+    return true;
+  }
+  else
+    return false;
 }
 
 FactList::const_iterator Knowledge::begin() const

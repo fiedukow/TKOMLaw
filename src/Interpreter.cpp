@@ -54,15 +54,20 @@ bool Interpreter::unknownTypeAction(InputStruct& /*is*/)
 
 bool Interpreter::ruleAction(InputStruct& is)
 {
-  std::cout << "New rule added" << std::endl;
-  knowledgeBase.addFact(is);
+
+  if(knowledgeBase.addFact(is))
+    std::cout << "New rule added" << std::endl;
+  else
+    std::cout << "Conflict :(" << std::endl;
   return true;
 }
 
 bool Interpreter::claimAction(InputStruct& is)
 {
-  std::cout << "New claim added" << std::endl;
-  knowledgeBase.addFact(is);
+  if(knowledgeBase.addFact(is))
+    std::cout << "New rule added" << std::endl;
+  else
+    std::cout << "Conflict :(" << std::endl;
   return true;
 }
 

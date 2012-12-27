@@ -13,7 +13,7 @@ class TmpFactPusher;
 class Knowledge
 {
 public:
-  void addFact(InputStruct);
+  bool addFact(InputStruct);
   FactList::const_iterator begin() const;
   FactList::const_iterator end() const;
   FactPtrList findBySentence(const std::string&) const;
