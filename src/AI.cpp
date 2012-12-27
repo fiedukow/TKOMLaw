@@ -106,24 +106,25 @@ AI::Answer AI::question(const InputStruct& is, AnswerStack& stack)
     case LogicOperator::OR:
     {
       Answer ans;
-      return (question(is.childs.front(), stack)
-              || question(is.childs.back(), stack));
+      ans = (question(is.childs.front(), stack)
+            || question(is.childs.back(), stack));
       if(ans != Answer::DK)
         return ans;
 
-      /*{
-        TmpFactPusher f(knowledgeBase, is.childs.front(), stack);
-        ans = !question(is.childs.back(), stack);
-      }
-      if(ans == Answer::NO)
-        return ans;
       {
-        TmpFactPusher f(knowledgeBase, is.childs.back(), stack);
-        ans = !question(is.childs.front(), stack);
+        TmpFactPusher f(knowledgeBase, is.childs.front());
+        ans = question(is.childs.back(), stack);
       }
       if(ans == Answer::NO)
-        return ans;
-*/
+        return Answer::YES;
+
+      {
+        TmpFactPusher f(knowledgeBase, is.childs.back());
+        ans = question(is.childs.front(), stack);
+      }
+      if(ans == Answer::NO)
+        return Answer::YES;
+
       return Answer::DK;
     }
     case LogicOperator::NOT:
