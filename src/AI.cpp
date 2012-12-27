@@ -31,7 +31,7 @@ AI::Answer operator||(AI::Answer f, AI::Answer s)
   if(f == AI::Answer::YES || s == AI::Answer::YES)
     return AI::Answer::YES;
 
-  if(f == AI::Answer::NO || s == AI::Answer::NO)
+  if(f == AI::Answer::NO && s == AI::Answer::NO)
     return AI::Answer::NO;
 
   return AI::Answer::DK;
