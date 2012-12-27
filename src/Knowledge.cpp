@@ -14,6 +14,17 @@ bool Knowledge::addFact(InputStruct fact)
     return false;
 }
 
+bool Knowledge::addFact(InputStruct fact, AnswerStack& stack)
+{
+  AI ai(*this);
+  if(ai.ask(fact, stack) != AI::Answer::NO)
+  {
+    knowledge.push_back(fact);
+    return true;
+  }
+  return false;
+}
+
 FactList::const_iterator Knowledge::begin() const
 {
   return knowledge.begin();
@@ -40,10 +51,13 @@ void Knowledge::popFact()
   knowledge.pop_back();
 }
 
-TmpFactPusher::TmpFactPusher(Knowledge &kw, InputStruct fact)
+TmpFactPusher::TmpFactPusher(Knowledge& kw,
+                             InputStruct fact,
+                             AnswerStack& stack)
   : knowledgeBase(kw)
 {
-  knowledgeBase.addFact(fact);
+  if(!knowledgeBase.addFact(fact, stack))
+    std::cout << "OO" << std::endl;
 }
 
 TmpFactPusher::~TmpFactPusher()

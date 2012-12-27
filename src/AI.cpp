@@ -87,6 +87,11 @@ AI::Answer AI::ask(const InputStruct &is)
   return answer;
 }
 
+AI::Answer AI::ask(const InputStruct &is, AnswerStack& stack)
+{
+  return question(is, stack);
+}
+
 AI::Answer AI::question(const InputStruct& is, AnswerStack& stack)
 {
   switch(is.op)
@@ -100,14 +105,14 @@ AI::Answer AI::question(const InputStruct& is, AnswerStack& stack)
         return ans;
 
       {
-        TmpFactPusher f(knowledgeBase, is.childs.front());
+        TmpFactPusher f(knowledgeBase, is.childs.front(), stack);
         ans = question(is.childs.back(), stack);
       }
       if(ans == Answer::NO)
         return ans;
 
       {
-        TmpFactPusher f(knowledgeBase, is.childs.back());
+        TmpFactPusher f(knowledgeBase, is.childs.back(), stack);
         ans = question(is.childs.front(), stack);
       }
       if(ans == Answer::NO)
@@ -124,14 +129,14 @@ AI::Answer AI::question(const InputStruct& is, AnswerStack& stack)
         return ans;
 
       {
-        TmpFactPusher f(knowledgeBase, is.childs.front());
+        TmpFactPusher f(knowledgeBase, is.childs.front(), stack);
         ans = question(is.childs.back(), stack);
       }
       if(ans == Answer::NO)
         return Answer::YES;
 
       {
-        TmpFactPusher f(knowledgeBase, is.childs.back());
+        TmpFactPusher f(knowledgeBase, is.childs.back(), stack);
         ans = question(is.childs.front(), stack);
       }
       if(ans == Answer::NO)
@@ -143,7 +148,7 @@ AI::Answer AI::question(const InputStruct& is, AnswerStack& stack)
       return !question(is.childs.front(), stack);
     case LogicOperator::IMPL:
     {
-      TmpFactPusher f(knowledgeBase, is.childs.front());
+      TmpFactPusher f(knowledgeBase, is.childs.front(), stack);
       return question(is.childs.back(), stack);
     }
     case LogicOperator::NONE:
@@ -217,17 +222,15 @@ AI::Answer AI::claimAnswer(const InputStruct& is,
     {
       return ans;
     }
-
     ans = (!question(claim.childs.back(), stack)
            && claimAnswer(is, claim.childs.front(), stack));
     if(ans == Answer::YES)
     {
       return ans;
     }
-
     //Sprawdzenie rownowaznosci
     {
-      TmpFactPusher f(knowledgeBase, claim.childs.front());
+      TmpFactPusher f(knowledgeBase, claim.childs.front(), stack);
       ans = question(is, stack);
     }
     if(ans != Answer::YES)
@@ -237,7 +240,7 @@ AI::Answer AI::claimAnswer(const InputStruct& is,
     }
 
     {
-      TmpFactPusher f(knowledgeBase, claim.childs.back());
+      TmpFactPusher f(knowledgeBase, claim.childs.back(), stack);
       ans = question(is, stack);
     }
     //Koniec sprawdzenia rownowaznosci

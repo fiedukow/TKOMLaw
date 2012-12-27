@@ -5,6 +5,8 @@
 
 #include "InputStruct.h"
 
+typedef std::list<const InputStruct*> AnswerStack;
+
 typedef std::list<InputStruct> FactList;
 typedef std::list<const InputStruct*> FactPtrList;
 
@@ -14,6 +16,7 @@ class Knowledge
 {
 public:
   bool addFact(InputStruct);
+  bool addFact(InputStruct, AnswerStack&);
   FactList::const_iterator begin() const;
   FactList::const_iterator end() const;
   FactPtrList findBySentence(const std::string&) const;
@@ -29,7 +32,7 @@ private:
 class TmpFactPusher
 {
 public:
-  TmpFactPusher(Knowledge&, InputStruct fact);
+  TmpFactPusher(Knowledge&, InputStruct fact, AnswerStack&);
   ~TmpFactPusher();
 
 private:

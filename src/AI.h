@@ -5,15 +5,18 @@
 
 #include "Knowledge.h"
 
+typedef std::list<const InputStruct*> AnswerStack;
+
 class AI
 {
 public:
   enum class Answer { YES, NO, DK };
-  typedef std::list<const InputStruct*> AnswerStack;
 
 public:
   AI(Knowledge& knowledgeBase);
   Answer ask(const InputStruct& is);
+  Answer ask(const InputStruct& is, AnswerStack& stack);
+
 private:
   Answer question(const InputStruct& is,
                   AnswerStack& stack);
