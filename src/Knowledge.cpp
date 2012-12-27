@@ -15,13 +15,13 @@ FactList::const_iterator Knowledge::end() const
   return knowledge.end();
 }
 
-FactList Knowledge::findBySentence(const std::string& sentence) const
+FactPtrList Knowledge::findBySentence(const std::string& sentence) const
 {
-  FactList result;
+  FactPtrList result;
   for(FactList::const_iterator i = begin(); i != end(); ++i)
   {
     if(i->containsSentence(sentence))
-      result.push_back(*i);
+      result.push_back(&(*i));
   }
   return result;
 }

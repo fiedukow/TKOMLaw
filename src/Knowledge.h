@@ -6,6 +6,7 @@
 #include "InputStruct.h"
 
 typedef std::list<InputStruct> FactList;
+typedef std::list<const InputStruct*> FactPtrList;
 
 class Knowledge
 {
@@ -13,7 +14,7 @@ public:
   void addFact(InputStruct);
   FactList::const_iterator begin() const;
   FactList::const_iterator end() const;
-  FactList findBySentence(const std::string&) const;
+  FactPtrList findBySentence(const std::string&) const;
 
 private:
   FactList knowledge;

@@ -70,19 +70,19 @@ bool Interpreter::questionAction(InputStruct& is)
 {
   std::cout << "The answer is: ";
   AI ai(knowledgeBase);
-  std::cout << AnsToStr[ai.question(is)] << std::endl;
+  std::cout << AnsToStr[ai.ask(is)] << std::endl;
   return true;
 }
 
 bool Interpreter::searchAction(InputStruct& is)
 {
   std::cout << "Looking for \"" << is.text << "\":" << std::endl;
-  const FactList found = knowledgeBase.findBySentence(is.text);
+  const FactPtrList found = knowledgeBase.findBySentence(is.text);
   int it = 0;
-  for(FactList::const_iterator i = found.begin(); i != found.end(); ++i)
+  for(FactPtrList::const_iterator i = found.begin(); i != found.end(); ++i)
   {
     std::cout << ++it << ". ";
-    i->printInline();
+    (*i)->printInline();
   }
   if(found.size() == 0)
     std::cout << "NOTHING FOUND" << std::endl;

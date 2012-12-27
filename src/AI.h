@@ -9,11 +9,16 @@ class AI
 {
 public:
   enum class Answer { YES, NO, DK };
+  typedef std::list<const InputStruct*> AnswerStack;
 
 public:
   AI(Knowledge& knowledgeBase);
-  Answer question(const InputStruct& is);
-  Answer sentenceQuestion(const InputStruct& is);
+  Answer ask(const InputStruct& is);
+private:
+  Answer question(const InputStruct& is,
+                  AnswerStack& stack);
+  Answer sentenceQuestion(const InputStruct& is,
+                          AnswerStack& stack);
   Answer claimAnswer(const InputStruct& is, const InputStruct& claim);
 
 private:

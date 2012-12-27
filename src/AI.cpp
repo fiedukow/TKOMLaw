@@ -1,5 +1,6 @@
 #include <cassert>
 #include <iostream>
+#include <algorithm>
 
 #include "AI.h"
 
@@ -67,43 +68,54 @@ AI::AI(Knowledge& knowledgeBase)
 {
 }
 
-AI::Answer AI::question(const InputStruct& is)
+AI::Answer AI::ask(const InputStruct &is)
+{
+  AnswerStack stack;
+  AI::Answer answer = question(is, stack);
+  return answer;
+}
+
+AI::Answer AI::question(const InputStruct& is, AnswerStack& stack)
 {
   switch(is.op)
   {
     case LogicOperator::AND:
-      return (question(is.childs.front()) && question(is.childs.back()));
+      return (question(is.childs.front(), stack) && question(is.childs.back(), stack));
     case LogicOperator::OR:
-      return (question(is.childs.front()) || question(is.childs.back()));
+      return (question(is.childs.front(), stack) || question(is.childs.back(), stack));
     case LogicOperator::NOT:
-      return !question(is.childs.front());
+      return !question(is.childs.front(), stack);
     case LogicOperator::NONE:
-      return sentenceQuestion(is);
+      return sentenceQuestion(is, stack);
     default:
       assert(false);
   }
 }
 
-AI::Answer AI::sentenceQuestion(const InputStruct& is)
+AI::Answer AI::sentenceQuestion(const InputStruct& is, AnswerStack& stack)
 {
   assert(is.op == LogicOperator::NONE);
 
-  FactList facts = knowledgeBase.findBySentence(is.text);
-  for(FactList::const_iterator i = facts.begin(); i != facts.end(); ++i)
+  FactPtrList facts = knowledgeBase.findBySentence(is.text);
+  for(FactPtrList::const_iterator i = facts.begin(); i != facts.end(); ++i)
   {
-    const InputStruct& currFact = *i;
-    if(currFact.st == SentenceType::RULE)
+    const InputStruct* currFact = *i;
+    if(std::find(stack.begin(), stack.end(), currFact) != stack.end())
+      continue;
+    if(currFact->st == SentenceType::RULE)
     {
-      if(currFact.childs.back().getTextFromSimpleSentence() == is.text)
+      if(currFact->childs.back().getTextFromSimpleSentence() == is.text)
       {
-        Answer ans = question(currFact.childs.front());
+        stack.push_back(currFact);
+        std::cout << "Stack " << stack.size() << ", added " << currFact << std::endl;
+        Answer ans = question(currFact->childs.front(), stack);
         if(ans != Answer::DK)
           return ans;
       }
     }
     else
     {
-      Answer ans = claimAnswer(is, currFact);
+      Answer ans = claimAnswer(is, *currFact);
       if(ans != Answer::DK)
         return ans;
     }
@@ -123,13 +135,11 @@ AI::Answer AI::claimAnswer(const InputStruct& is, const InputStruct& claim)
   case LogicOperator::NONE:
     if(is.text == claim.text)
     {
-      std::cout << "YES" << std::endl;
       return Answer::YES;
     }
     else
     {
-      std::cout << "DK" << std::endl;
-      return Answer::DK;
+      return Answer::NO;
     }
   case LogicOperator::NOT:
     return !claimAnswer(is, claim.childs.front());
