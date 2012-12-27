@@ -108,13 +108,14 @@ AI::Answer AI::sentenceQuestion(const InputStruct& is, AnswerStack& stack)
       {
         stack.push_back(currFact);
         Answer ans = question(currFact->childs.front(), stack);
+        stack.pop_back();
         if(ans != Answer::DK)
           return ans;
       }
     }
     else
     {
-      Answer ans = claimAnswer(is, *currFact);
+      Answer ans = claimAnswer(is, *currFact, stack);
       if(ans != Answer::DK)
         return ans;
     }
@@ -122,12 +123,12 @@ AI::Answer AI::sentenceQuestion(const InputStruct& is, AnswerStack& stack)
   return Answer::DK;
 }
 
-AI::Answer AI::claimAnswer(const InputStruct& is, const InputStruct& claim)
+AI::Answer AI::claimAnswer(const InputStruct& is,
+                           const InputStruct& claim,
+                           AnswerStack& stack)
 {
-  std::cout << "Claim: ";
-  claim.printInline();
-  std::cout << "Prove: ";
-  is.printInline();
+  if(std::find(stack.begin(), stack.end(), &claim) != stack.end())
+    return Answer::DK;
 
   switch(claim.op)
   {
@@ -138,16 +139,53 @@ AI::Answer AI::claimAnswer(const InputStruct& is, const InputStruct& claim)
     }
     else
     {
-      return Answer::NO;
+      return Answer::DK;
     }
   case LogicOperator::NOT:
-    return !claimAnswer(is, claim.childs.front());
+    return !claimAnswer(is, claim.childs.front(), stack);
   case LogicOperator::AND:
-    return (claimAnswer(is, claim.childs.front())
-            || claimAnswer(is, claim.childs.back()));
+    return (claimAnswer(is, claim.childs.front(), stack)
+            || claimAnswer(is, claim.childs.back(), stack));
   case LogicOperator::OR:
-    return (claimAnswer(is, claim.childs.front())
-           ^ claimAnswer(is, claim.childs.back()));
+    Answer ans;
+
+    stack.push_back(&claim);
+    ans = (!question(claim.childs.front(), stack)
+           && claimAnswer(is, claim.childs.back(), stack));
+    if(ans == Answer::YES)
+    {
+      return ans;
+    }
+    stack.push_back(&(claim.childs.back()));
+    ans = (!question(claim.childs.back(), stack)
+           && claimAnswer(is, claim.childs.front(), stack));
+    if(ans == Answer::YES)
+    {
+      return ans;
+    }
+
+    //Sprawdzenie rownowaznosci
+    {
+      TmpFactPusher f(knowledgeBase, claim.childs.front());
+      ans = question(claim.childs.back(), stack);
+    }
+    if(ans != Answer::YES)
+    {
+      stack.pop_back();
+      return Answer::DK;
+    }
+
+    {
+      TmpFactPusher f(knowledgeBase, claim.childs.back());
+      ans = question(claim.childs.front(), stack);
+    }
+    //Koniec sprawdzenia rownowaznosci
+
+    if(ans == Answer::YES)
+      return ans;
+
+    stack.pop_back();
+    return Answer::DK;
   default:
     assert(false);
   }

@@ -19,10 +19,12 @@ private:
                   AnswerStack& stack);
   Answer sentenceQuestion(const InputStruct& is,
                           AnswerStack& stack);
-  Answer claimAnswer(const InputStruct& is, const InputStruct& claim);
+  Answer claimAnswer(const InputStruct& is,
+                     const InputStruct& claim,
+                     AnswerStack &stack);
 
 private:
-  const Knowledge& knowledgeBase;
+  Knowledge& knowledgeBase;
 };
 
 std::map<AI::Answer, std::string> answerMap();

@@ -1,4 +1,5 @@
 #include "Knowledge.h"
+#include <iostream>
 
 void Knowledge::addFact(InputStruct fact)
 {
@@ -24,5 +25,21 @@ FactPtrList Knowledge::findBySentence(const std::string& sentence) const
       result.push_back(&(*i));
   }
   return result;
+}
+
+void Knowledge::popFact()
+{
+  knowledge.pop_back();
+}
+
+TmpFactPusher::TmpFactPusher(Knowledge &kw, InputStruct fact)
+  : knowledgeBase(kw)
+{
+  knowledgeBase.addFact(fact);
+}
+
+TmpFactPusher::~TmpFactPusher()
+{
+  knowledgeBase.popFact();
 }
 
