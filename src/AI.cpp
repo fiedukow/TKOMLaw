@@ -89,13 +89,14 @@ AI::Answer AI::question(const InputStruct& is, AnswerStack& stack)
 
       {
         TmpFactPusher f(knowledgeBase, is.childs.front());
-        ans = !question(is.childs.back(), stack);
+        ans = question(is.childs.back(), stack);
       }
       if(ans == Answer::NO)
         return ans;
+
       {
         TmpFactPusher f(knowledgeBase, is.childs.back());
-        ans = !question(is.childs.front(), stack);
+        ans = question(is.childs.front(), stack);
       }
       if(ans == Answer::NO)
         return ans;
