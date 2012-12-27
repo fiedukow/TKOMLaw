@@ -34,11 +34,16 @@ struct TKOMLawGrammar : public spirit::qi::grammar<Iterator, InputStruct()>
 
     regula =
       (
+        implikacja[_val=_1] >>
+        qi::string(".")
+      );
+
+    implikacja =
+      (
         qi::string("Jesli ") >>
         suma_logiczna [push_back(at_c<3>(_val), _1)] >>
         qi::string(" to ") [at_c<2>(_val) = LogicOperator::IMPL] >>
-        zdanie_proste [push_back(at_c<3>(_val), _1)] >>
-        qi::string(".")
+        zdanie_proste [push_back(at_c<3>(_val), _1)]
       );
 
     zdanie_twierdzace =
@@ -49,7 +54,11 @@ struct TKOMLawGrammar : public spirit::qi::grammar<Iterator, InputStruct()>
 
     pytanie =
       (
-        suma_logiczna[_val=_1] >>
+        (
+          (suma_logiczna)[_val=_1] |
+          (implikacja)[_val=_1]
+        )
+        >>
         qi::string("?")
       );
 
@@ -106,6 +115,7 @@ struct TKOMLawGrammar : public spirit::qi::grammar<Iterator, InputStruct()>
 
   qi::rule<Iterator, InputStruct()> zdanie;
   qi::rule<Iterator, InputStruct()> regula;
+  qi::rule<Iterator, InputStruct()> implikacja;
   qi::rule<Iterator, InputStruct()> zdanie_twierdzace;
   qi::rule<Iterator, InputStruct()> pytanie;
   qi::rule<Iterator, InputStruct()> wyszukiwanie;
