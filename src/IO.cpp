@@ -44,7 +44,6 @@ void IO::answer(AI::Answer ans) const
 
 void IO::conflictRule(std::string rule, std::list<std::string>/* stack*/) const
 {
-
   std::cout << "Nie moge dodac reguły " << rule << std::endl;
 }
 
