@@ -1,0 +1,9 @@
+Jesli "a" i "g" lub "c" to "x".
+Jesli nie "a" i nie "c" lub nie "g" i nie "c" to nie "x".
+"a"?
+"x"?
+Jesli "a" to "x"?
+Jesli "c" to "x"?
+Jesli "a" i "g" to "x"?
+Jesli nie "g" i "c" to "x"?
+Jesli nie "g" i nie "c" to "x"?
