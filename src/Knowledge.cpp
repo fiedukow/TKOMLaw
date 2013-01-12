@@ -56,8 +56,11 @@ TmpFactPusher::TmpFactPusher(Knowledge& kw,
                              AnswerStack& stack)
   : knowledgeBase(kw)
 {
+  //TODO - better exception then std.
   if(!knowledgeBase.addFact(fact, stack))
-    std::cout << "OO" << std::endl;
+  {
+    throw std::exception();
+  }
 }
 
 TmpFactPusher::~TmpFactPusher()
