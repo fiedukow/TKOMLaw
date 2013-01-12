@@ -26,8 +26,6 @@ private:
                      const InputStruct& claim,
                      AnswerStack &stack);
 
-  AnswerStack& lastAnswerStack;
-
 private:
   Knowledge& knowledgeBase;
 };

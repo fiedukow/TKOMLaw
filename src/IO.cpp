@@ -15,18 +15,20 @@ std::map<AI::Answer, std::string> answerMap()
   return result;
 }
 
-IO::IO(Interpreter& interpreter)
-  : interpreter(interpreter)
+IO::IO(Interpreter& interpreter, std::string inWord)
+  : interpreter(interpreter),
+    inWord(inWord)
 {
 }
 
 void IO::operator()() const
 {
   std::string inputLine;
-  getline(std::cin, inputLine);
   do {
-    interpreter.parseLine(inputLine);
+    std::cout << inWord;
     getline(std::cin, inputLine);
+    if(inputLine != "")
+      interpreter.parseLine(inputLine);
   } while (inputLine != "");
 }
 
@@ -40,13 +42,16 @@ void IO::answer(AI::Answer ans) const
   std::cout << AnsToStr[ans] << std::endl;
 }
 
-void IO::conflictRule(std::string rule, std::list<std::string> stack) const
+void IO::conflictRule(std::string rule, std::list<std::string>/* stack*/) const
 {
-  int count = 0;
+
   std::cout << "Nie moge dodac reguły " << rule << std::endl;
+  /*
+  int count = 0;
   std::cout << "Konflikt: " << std::endl;
   for(auto& i : stack)
-    std::cout << "#" << ++count << " " << i << std::endl;
+  std::cout << "#" << ++count << " " << i << std::endl;
+  */
 }
 
 void IO::unknownCommand(std::string command) const

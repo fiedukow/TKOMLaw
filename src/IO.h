@@ -7,7 +7,7 @@ class Interpreter;
 class IO
 {
 public:
-  IO(Interpreter& interpreter);
+  IO(Interpreter& interpreter, std::string inWord);
   void operator()() const;
 
   void addedRule(std::string rule) const;
@@ -17,6 +17,7 @@ public:
   void unknownCommand(std::string command) const;
 private:
   Interpreter& interpreter;
+  std::string inWord;
   static /*const*/ std::map<AI::Answer, std::string> AnsToStr;
 };
 
