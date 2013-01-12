@@ -1,5 +1,5 @@
-#include <iostream>
 #include <cassert>
+#include <sstream>
 
 #include "InputStruct.h"
 
@@ -80,7 +80,42 @@ bool InputStruct::getIfNegativeFromSimpleSentence() const
   return result;
 }
 
+std::string InputStruct::toString() const
+{
+  std::stringstream ss;
+  switch(op)
+  {
+    case LogicOperator::NONE:
+      ss << '\"' << text << '\"';
+      break;
+    case LogicOperator::NOT:
+      ss << "nie ";
+      ss << childs.front().toString();
+      break;
+    case LogicOperator::AND:
+      ss << childs.front().toString();
+      ss << " i ";
+      ss << childs.back().toString();
+      break;
+    case LogicOperator::OR:
+      ss << childs.front().toString();
+      ss << " lub ";
+      ss << childs.back().toString();
+      break;
+    case LogicOperator::IMPL:
+      ss << "Jesli ";
+      ss << childs.front().toString();
+      ss << " to ";
+      ss << childs.back().toString();
+      break;
+    default:
+      assert(false);
+  }
 
+  return ss.str();
+}
+
+/*
 void InputStruct::print(int tab) const
 {
   tabs(tab);
@@ -124,23 +159,23 @@ void InputStruct::printInline(bool newline) const
       break;
     case LogicOperator::NOT:
       std::cout << "nie ";
-      childs.front().printInline(false);
+      childs.front().toString();
       break;
     case LogicOperator::AND:
-      childs.front().printInline(false);
+      childs.front().toString();
       std::cout << " i ";
-      childs.back().printInline(false);
+      childs.back().toString();
       break;
     case LogicOperator::OR:
-      childs.front().printInline(false);
+      childs.front().toString();
       std::cout << " lub ";
-      childs.back().printInline(false);
+      childs.back().toString();
       break;
     case LogicOperator::IMPL:
       std::cout << "Jesli ";
-      childs.front().printInline(false);
+      childs.front().toString();
       std::cout << " to ";
-      childs.back().printInline(false);
+      childs.back().toString();
       break;
     default:
       assert(false);
@@ -155,5 +190,5 @@ void InputStruct::tabs(int tab)
 {
   while(tab--)
     std::cout << "\t";
-}
+}*/
 

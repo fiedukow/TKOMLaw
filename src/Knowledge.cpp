@@ -1,6 +1,5 @@
 #include "Knowledge.h"
 #include "AI.h"
-#include <iostream>
 
 bool Knowledge::addFact(InputStruct fact)
 {

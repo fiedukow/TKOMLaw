@@ -11,6 +11,7 @@
 
 #include "InputStruct.h"
 
+class IO;
 class Knowledge;
 
 class Interpreter : boost::noncopyable
@@ -21,6 +22,7 @@ class Interpreter : boost::noncopyable
 public:
   Interpreter(Knowledge& knowledge);
   bool parseLine(std::string toParse);
+  void setOutput(IO* io);
 
 private:
   bool unknownTypeAction(InputStruct& /*is*/);
@@ -32,6 +34,7 @@ private:
   ActionMap createActionMap();
   /*const*/ ActionMap actionMap;
   Knowledge& knowledgeBase;
+  const IO* io;
 };
 
 #endif // INTERPRETER_H

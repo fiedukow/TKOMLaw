@@ -26,11 +26,12 @@ private:
                      const InputStruct& claim,
                      AnswerStack &stack);
 
+  AnswerStack& lastAnswerStack;
+
 private:
   Knowledge& knowledgeBase;
 };
 
-std::map<AI::Answer, std::string> answerMap();
 AI::Answer operator!(AI::Answer ans);
 AI::Answer operator||(AI::Answer f, AI::Answer s);
 AI::Answer operator&&(AI::Answer f, AI::Answer s);

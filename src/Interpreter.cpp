@@ -6,14 +6,14 @@
 #include "TKOMLawGrammar.hpp"
 #include "Knowledge.h"
 #include "AI.h"
+#include "IO.h"
 
 using namespace boost;
 
-/*const*/ std::map<AI::Answer, std::string> AnsToStr = answerMap();
-
 Interpreter::Interpreter(Knowledge& knowledgeBase)
   : actionMap(createActionMap()),
-    knowledgeBase(knowledgeBase)
+    knowledgeBase(knowledgeBase),
+    io(NULL)
 {
 }
 
@@ -42,10 +42,20 @@ bool Interpreter::parseLine(std::string toParse)
   InputStruct parsed;
   bool r = phrase_parse(toParse.begin(), toParse.end(), grammar, space, parsed);
   if(!r)
+  {
+    if(io)
+      io->unknownCommand(toParse);
     return false; /*parsing failor*/
+  }
 
   return actionMap[parsed.st](parsed);
 }
+
+void Interpreter::setOutput(IO* io)
+{
+  this->io = io;
+}
+
 
 bool Interpreter::unknownTypeAction(InputStruct& /*is*/)
 {
@@ -56,40 +66,54 @@ bool Interpreter::ruleAction(InputStruct& is)
 {
 
   if(knowledgeBase.addFact(is))
-    std::cout << "New rule added" << std::endl;
+  {
+    if(io)
+      io->addedRule(is.toString());
+  }
   else
-    std::cout << "Conflict :(" << std::endl;
+  {
+    if(io)
+      io->conflictRule(is.toString(), std::list<std::string>());
+  }
   return true;
 }
 
 bool Interpreter::claimAction(InputStruct& is)
 {
-  if(knowledgeBase.addFact(is))
-    std::cout << "New rule added" << std::endl;
+  AnswerStack stack;
+  std::list<std::string> conflict;
+  if(knowledgeBase.addFact(is, stack))
+  {
+    if(io)
+      io->addedRule(is.toString());
+  }
   else
-    std::cout << "Conflict :(" << std::endl;
+  {
+    for(auto& i : stack)
+      conflict.push_back(i->toString());
+    if(io)
+      io->conflictRule(is.toString(), conflict);
+  }
   return true;
 }
 
 bool Interpreter::questionAction(InputStruct& is)
 {
-  std::cout << "The answer is: ";
   AI ai(knowledgeBase);
-  std::cout << AnsToStr[ai.ask(is)] << std::endl;
+  if(io)
+    io->answer(ai.ask(is));
   return true;
 }
 
 bool Interpreter::searchAction(InputStruct& is)
 {
-  std::cout << "Looking for \"" << is.text << "\":" << std::endl;
+  std::list<std::string> connected;
   const FactPtrList found = knowledgeBase.findBySentence(is.text);
-  int it = 0;
   for(FactPtrList::const_iterator i = found.begin(); i != found.end(); ++i)
-  {
-    std::cout << ++it << ". ";
-    (*i)->printInline();
-  }
-  if(found.size() == 0)
-    std::cout << "NOTHING FOUND" << std::endl;
+  for(auto& i : found)
+    connected.push_back(i->toString());
+
+  if(io)
+    io->informationsAbout(is.toString(), connected);
   return true;
 }

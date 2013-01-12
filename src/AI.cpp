@@ -1,17 +1,7 @@
 #include <cassert>
-#include <iostream>
 #include <algorithm>
 
 #include "AI.h"
-
-std::map<AI::Answer, std::string> answerMap()
-{
-  std::map<AI::Answer, std::string> result;
-  result[AI::Answer::YES] = "YES";
-  result[AI::Answer::NO] = "NO";
-  result[AI::Answer::DK] = "DK";
-  return result;
-}
 
 AI::Answer operator!(AI::Answer ans)
 {

@@ -21,9 +21,12 @@ struct InputStruct
   std::string getTextFromSimpleSentence() const;
   bool getIfNegativeFromSimpleSentence() const;
 
+  std::string toString() const;
+  /*
   void print(int tab = 0) const;
   void printInline(bool newline = true) const;
   static void tabs(int tab);
+  */
 
   SentenceType st;
   std::string text;
