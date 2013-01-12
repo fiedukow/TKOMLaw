@@ -66,6 +66,21 @@ std::string InputStruct::getTextFromSimpleSentence() const
   return current->text;
 }
 
+bool InputStruct::getIfNegativeFromSimpleSentence() const
+{
+  bool result = false;
+  const InputStruct* current = this;
+  while(current->op == LogicOperator::NOT)
+  {
+    current = &(current->childs.front());
+    result = !result;
+  }
+
+  assert(current->op == LogicOperator::NONE);
+  return result;
+}
+
+
 void InputStruct::print(int tab) const
 {
   tabs(tab);

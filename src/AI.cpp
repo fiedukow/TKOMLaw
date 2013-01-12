@@ -104,6 +104,14 @@ AI::Answer AI::question(const InputStruct& is, AnswerStack& stack)
       if(ans != Answer::DK)
         return ans;
 
+      /*
+       * jesli nie jestesmy w stanie ustalic wartosci logicznej ktoregos
+       * ze zdan, mozemy sprobowac zalozyc ze jedno z nich jest faktem
+       * jesli wtedy wyniknie nam, że drugie jest falszywe to znaczy
+       * że całe zdanie jest fałszywe - w kazdym innym wypadku nadal nie wiemy
+       * nic. Uzywamy wnioskowania nie wprost.
+       */
+
       {
         TmpFactPusher f(knowledgeBase, is.childs.front(), stack);
         ans = question(is.childs.back(), stack);
@@ -123,24 +131,37 @@ AI::Answer AI::question(const InputStruct& is, AnswerStack& stack)
     case LogicOperator::OR:
     {
       Answer ans;
-      ans = (question(is.childs.front(), stack)
-            || question(is.childs.back(), stack));
+      Answer leftAns = question(is.childs.front(), stack);
+      Answer rightAns = question(is.childs.back(), stack);
+      ans = (leftAns || rightAns);
       if(ans != Answer::DK)
         return ans;
 
+      /*
+       * Jesli nie ustalimy wyniku klasycznie tj. ani lewe ani prawe podzdanie
+       * nie da wyniku pozytywnego a takze przynajmniej jedno da wynik DK
+       * istnieje szansa ze zdania laczy wewnętrzna zależność.
+       * Szansa ta może się pojawić tylko wtedy gdy oba podzdania mają wartość
+       * DK, ponieważ w przeciwnym razie objawiła by się w normalnym wnioskowaniu.
+       * Dlatego gdy oba zdania mają wartość DK i po dodaniu jednego z tych zdan
+       * do bazy wiedzy drugie staje się fałszywe - alternatywa jest prawdziwa.
+       */
+      if ((leftAns && rightAns) == Answer::DK)
       {
-        TmpFactPusher f(knowledgeBase, is.childs.front(), stack);
-        ans = question(is.childs.back(), stack);
-      }
-      if(ans == Answer::NO)
-        return Answer::YES;
+        {
+          TmpFactPusher f(knowledgeBase, is.childs.front(), stack);
+          ans = question(is.childs.back(), stack);
+        }
+        if(ans == Answer::NO)
+          return Answer::YES;
 
-      {
-        TmpFactPusher f(knowledgeBase, is.childs.back(), stack);
-        ans = question(is.childs.front(), stack);
+        {
+          TmpFactPusher f(knowledgeBase, is.childs.back(), stack);
+          ans = question(is.childs.front(), stack);
+        }
+        if(ans == Answer::NO)
+          return Answer::YES;
       }
-      if(ans == Answer::NO)
-        return Answer::YES;
 
       return Answer::DK;
     }
@@ -162,19 +183,26 @@ AI::Answer AI::sentenceQuestion(const InputStruct& is, AnswerStack& stack)
 {
   assert(is.op == LogicOperator::NONE);
 
-  FactPtrList facts = knowledgeBase.findBySentence(is.text);
+  FactPtrList facts = knowledgeBase.findBySentence(is.text); //fakty powiazane
+                                                             // ze zdaniem
+                                                             // o ktore pytamy
   for(FactPtrList::const_iterator i = facts.begin(); i != facts.end(); ++i)
   {
     const InputStruct* currFact = *i;
     if(std::find(stack.begin(), stack.end(), currFact) != stack.end())
-      continue;
+      continue; //nie wykorzystuj faktow ktore probujesz udowodnic
+
     if(currFact->st == SentenceType::RULE)
     {
+      //korzystamy z reguly tylko gdy nastepnik dotyczy nas
       if(currFact->childs.back().getTextFromSimpleSentence() == is.text)
       {
         stack.push_back(currFact);
         Answer ans = question(currFact->childs.front(), stack);
         stack.pop_back();
+        bool neg = currFact->childs.back().getIfNegativeFromSimpleSentence();
+        if(neg)
+          ans = !ans;
         if(ans != Answer::DK)
           return ans;
       }
@@ -246,7 +274,10 @@ AI::Answer AI::claimAnswer(const InputStruct& is,
     //Koniec sprawdzenia rownowaznosci
 
     if(ans == Answer::YES)
+    {
+      stack.pop_back();
       return ans;
+    }
 
     stack.pop_back();
     return Answer::DK;

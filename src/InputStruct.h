@@ -19,6 +19,7 @@ struct InputStruct
 
   bool containsSentence(const std::string& sentence) const;
   std::string getTextFromSimpleSentence() const;
+  bool getIfNegativeFromSimpleSentence() const;
 
   void print(int tab = 0) const;
   void printInline(bool newline = true) const;
