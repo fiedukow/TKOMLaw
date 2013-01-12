@@ -279,64 +279,7 @@ AI::Answer AI::claimAnswer(const InputStruct& is,
       }
     }
 
-    /*
-     * Jesli sprawdzenie klasyczne zawiodlo byc moze istnieje jakas zaleznosc
-     * miedy podzdaniami.
-     * Jesli uda nam sie udowodnic ze zdania o ktore nie pytamy wynika zdanie
-     * o ktore pytamy a takze udowodnic zdanie o ktore nie pytamy to uzyskamy
-     * wynik pozytywny
-     */
-
-    try
-    {
-      //czy z pierwszego wynika drugie
-      TmpFactPusher f(knowledgeBase, claim.childs.front(), stack);
-      assert(std::find(stack.begin(), stack.end(), &claim.childs.front()) == stack.end());
-      ans = question(claim.childs.back(), stack);
-    }
-    catch(...)
-    {
-      ans = Answer::NO;
-    }
-    if(ans != Answer::DK)
-    {
-      //wiemy ze z pierwszego zdania wynika cos na temat drugiego
-      if(question(claim.childs.front(), stack) == Answer::YES)
-      {
-        if(claimAnswer(is, claim.childs.back(), stack) == Answer::YES)
-        {
-          stack.pop_back();
-          return ans;
-        }
-      }
-    }
-
-
-    try
-    {
-      //czy z drugiego wynika pierwsze
-      TmpFactPusher f(knowledgeBase, claim.childs.back(), stack);
-      assert(std::find(stack.begin(), stack.end(), &claim.childs.front()) == stack.end());
-      ans = question(claim.childs.front(), stack);
-    }
-    catch(...)
-    {
-      ans = Answer::NO;
-    }
-    if(ans != Answer::DK)
-    {
-      //wiemy ze z drugiego zdania wynika cos na temat pierwszego
-      if(question(claim.childs.back(), stack) == Answer::YES)
-      {
-        if(claimAnswer(is, claim.childs.front(), stack) == Answer::YES)
-        {
-          stack.pop_back();
-          return ans;
-        }
-      }
-    }
-
-
+    //sprawdzenie rownowaznosci
     {
       TmpFactPusher f(knowledgeBase, claim.childs.front(), stack);
       ans = question(is, stack);
