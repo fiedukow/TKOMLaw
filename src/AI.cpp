@@ -190,7 +190,9 @@ AI::Answer AI::sentenceQuestion(const InputStruct& is, AnswerStack& stack)
   {
     const InputStruct* currFact = *i;
     if(std::find(stack.begin(), stack.end(), currFact) != stack.end())
+    {
       continue; //nie wykorzystuj faktow ktore probujesz udowodnic
+    }
 
     if(currFact->st == SentenceType::RULE)
     {
@@ -226,7 +228,6 @@ AI::Answer AI::claimAnswer(const InputStruct& is,
     return Answer::DK;
   }
 
-
   switch(claim.op)
   {
   case LogicOperator::NONE:
@@ -256,19 +257,26 @@ AI::Answer AI::claimAnswer(const InputStruct& is,
      * naszego pytania - jesli mozemy to znaczy ze wystarczy ze udowodnimy
      * nasza teze tym drugim pod zdaniem bo ono jest na pewno prawdziwe
      */
-    ans = (!question(claim.childs.front(), stack)
-           && claimAnswer(is, claim.childs.back(), stack));
+    ans = (!question(claim.childs.front(), stack));
     if(ans == Answer::YES)
     {
-      stack.pop_back();
-      return ans;
+      ans = claimAnswer(is, claim.childs.back(), stack);
+      if(ans != Answer::DK)
+      {
+        stack.pop_back();
+        return ans;
+      }
     }
-    ans = (!question(claim.childs.back(), stack)
-           && claimAnswer(is, claim.childs.front(), stack));
+
+    ans = (!question(claim.childs.back(), stack));
     if(ans == Answer::YES)
     {
-      stack.pop_back();
-      return ans;
+      ans = claimAnswer(is, claim.childs.front(), stack);
+      if(ans != Answer::DK)
+      {
+        stack.pop_back();
+        return ans;
+      }
     }
 
     /*
