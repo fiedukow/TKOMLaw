@@ -1,0 +1,13 @@
+Dodano regule: "a" i "b" lub nie nie nie nie nie "c"
+Dodano regule: Jesli "a" to "b"
+Komenda nie zgodna ze skladnia: Jesli "a" i "b" to "c" i "d".
+Dodano regule: Jesli "x" to "a"
+Dodano regule: Jesli "b" lub "a" to "x"
+Na temat: "a", wiem nastepujace rzeczy:
+#1 "a" i "b" lub nie nie nie nie nie "c"
+#2 Jesli "a" to "b"
+#3 Jesli "x" to "a"
+#4 Jesli "b" lub "a" to "x"
+Na temat: "x", wiem nastepujace rzeczy:
+#1 Jesli "x" to "a"
+#2 Jesli "b" lub "a" to "x"

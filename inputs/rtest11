@@ -1,0 +1,9 @@
+Dodano regule: Jesli "a" lub "b" to "a"
+Nie moge dodac reguły Jesli "a" to nie "a"
+Konflikt wewnetrzny!
+Dodano regule: nie "a"
+Nie moge dodac reguły "b"
+Konflikt: 
+#1 Jesli "a" lub "b" to "a"
+#2 nie "a"
+#3 nie "a"
