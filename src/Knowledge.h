@@ -32,9 +32,9 @@ private:
 class TmpFactPusher
 {
 public:
-  TmpFactPusher(Knowledge&, InputStruct fact,
-                AnswerStack&,
-                AnswerStack* toSaveResultTrack);
+  TmpFactPusher(Knowledge&,
+                InputStruct fact,
+                AnswerStack&);
   ~TmpFactPusher();
 
 private:

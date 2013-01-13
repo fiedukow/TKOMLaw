@@ -52,12 +52,11 @@ void Knowledge::popFact()
 
 TmpFactPusher::TmpFactPusher(Knowledge& kw,
                              InputStruct fact,
-                             AnswerStack& stack,
-                             AnswerStack* toSaveResultTrack)
+                             AnswerStack& stack)
   : knowledgeBase(kw)
 {
   //TODO - better exception then std.
-  if(!knowledgeBase.addFact(fact, stack, toSaveResultTrack))
+  if(!knowledgeBase.addFact(fact, stack, NULL))
   {
     throw std::exception();
   }

@@ -2,7 +2,7 @@
 import os
 
 env = Environment(
-                    CXX = 'clang++',
+                    CXX = 'g++',
                     CCFLAGS = '-std=c++0x -Wall -Wextra -pedantic -g',
                     LINKFLAGS = '-g'
                  )

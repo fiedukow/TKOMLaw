@@ -107,15 +107,15 @@ AI::Answer AI::question(const InputStruct& is,
        */
 
       {
-        TmpFactPusher f(knowledgeBase, is.childs.front(), stack, toSaveResultTrack);
-        ans = question(is.childs.back(), stack, toSaveResultTrack);
+        TmpFactPusher f(knowledgeBase, is.childs.front(), stack);
+        ans = question(is.childs.back(), stack, NULL);
       }
       if(ans == Answer::NO)
         return ans;
 
       {
-        TmpFactPusher f(knowledgeBase, is.childs.back(), stack, toSaveResultTrack);
-        ans = question(is.childs.front(), stack, toSaveResultTrack);
+        TmpFactPusher f(knowledgeBase, is.childs.back(), stack);
+        ans = question(is.childs.front(), stack, NULL);
       }
       if(ans == Answer::NO)
         return ans;
@@ -143,15 +143,15 @@ AI::Answer AI::question(const InputStruct& is,
       if ((leftAns && rightAns) == Answer::DK)
       {
         {
-          TmpFactPusher f(knowledgeBase, is.childs.front(), stack, toSaveResultTrack);
-          ans = question(is.childs.back(), stack, toSaveResultTrack);
+          TmpFactPusher f(knowledgeBase, is.childs.front(), stack);
+          ans = question(is.childs.back(), stack, NULL);
         }
         if(ans == Answer::NO)
           return Answer::YES;
 
         {
-          TmpFactPusher f(knowledgeBase, is.childs.back(), stack, toSaveResultTrack);
-          ans = question(is.childs.front(), stack, toSaveResultTrack);
+          TmpFactPusher f(knowledgeBase, is.childs.back(), stack);
+          ans = question(is.childs.front(), stack, NULL);
         }
         if(ans == Answer::NO)
           return Answer::YES;
@@ -164,8 +164,8 @@ AI::Answer AI::question(const InputStruct& is,
     case LogicOperator::IMPL:
     try
     {
-      TmpFactPusher f(knowledgeBase, is.childs.front(), stack, toSaveResultTrack);
-      return question(is.childs.back(), stack, toSaveResultTrack);
+      TmpFactPusher f(knowledgeBase, is.childs.front(), stack);
+      return question(is.childs.back(), stack, NULL);
     }
     catch(...)
     {
@@ -255,12 +255,6 @@ AI::Answer AI::claimAnswer(const InputStruct& is,
                     claimAnswer(is, claim.childs.back(), stack, toSaveResultTrack));
   case LogicOperator::OR:
     Answer ans;
-
-    if(toSaveResultTrack)
-    {
-      resetStackFromLvl(toSaveResultTrack, stack.size());
-      toSaveResultTrack->push_back(&claim);
-    }
     stack.push_back(&claim);
 
     //TODO: May be optymalized by renumbering which one is the one we want to
@@ -295,8 +289,8 @@ AI::Answer AI::claimAnswer(const InputStruct& is,
 
     //sprawdzenie rownowaznosci
     {
-      TmpFactPusher f(knowledgeBase, claim.childs.front(), stack, toSaveResultTrack);
-      ans = question(is, stack, toSaveResultTrack);
+      TmpFactPusher f(knowledgeBase, claim.childs.front(), stack);
+      ans = question(is, stack, NULL);
     }
     if(ans != Answer::YES)
     {
@@ -305,8 +299,8 @@ AI::Answer AI::claimAnswer(const InputStruct& is,
     }
 
     {
-      TmpFactPusher f(knowledgeBase, claim.childs.back(), stack, toSaveResultTrack);
-      ans = question(is, stack, toSaveResultTrack);
+      TmpFactPusher f(knowledgeBase, claim.childs.back(), stack);
+      ans = question(is, stack, NULL);
     }
     //Koniec sprawdzenia rownowaznosci
 
