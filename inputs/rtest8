@@ -1,0 +1,8 @@
+Dodano regule: Jesli "c" to nie "b"
+Dodano regule: Jesli "a" to "c"
+Dodano regule: "a"
+Nie moge dodac reguły "b"
+Konflikt: 
+#1 Jesli "c" to nie "b"
+#2 Jesli "a" to "c"
+#3 "a"
