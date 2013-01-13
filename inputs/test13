@@ -1,0 +1,11 @@
+Jesli "wytnie drzewo" i "drzewo pod ochrona" i nie "drzewo ma mniej niz 5 lat" to "idzie do wiezienia".
+Jesli nie "wytnie drzewo" lub "drzewo ma mniej niz 5 lat" to nie "idzie do wiezienia".
+"idzie do wiezienia"?
+nie "idzie do wiezienia"?
+"wytnie drzewo".
+"idzie do wiezienia"?
+"drzewo pod ochrona".
+"idzie do wiezienia"?
+"idzie do wiezienia" i "drzewo ma mniej niz 5 lat"?
+"idzie do wiezienia" lub "drzewo ma mniej niz 5 lat"?
+
