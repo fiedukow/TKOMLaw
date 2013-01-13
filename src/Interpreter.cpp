@@ -112,7 +112,6 @@ bool Interpreter::searchAction(InputStruct& is)
 {
   std::list<std::string> connected;
   const FactPtrList found = knowledgeBase.findBySentence(is.text);
-  for(FactPtrList::const_iterator i = found.begin(); i != found.end(); ++i)
   for(auto& i : found)
     connected.push_back(i->toString());
 
