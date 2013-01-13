@@ -1,0 +1,9 @@
+Dodano regule: Jesli "a" i "b" to "c"
+Dodano regule: Jesli "a" i "d" to nie "c"
+Dodano regule: "a"
+Dodano regule: "b"
+Nie moge dodac reguły "d"
+Konflikt: 
+#1 Jesli "a" i "d" to nie "c"
+#2 Jesli "a" i "b" to "c"
+#3 "a"
