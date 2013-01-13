@@ -271,9 +271,6 @@ AI::Answer AI::claimAnswer(const InputStruct& is,
     Answer ans;
     stack.push_back(&claim);
 
-    //TODO: May be optymalized by renumbering which one is the one we want to
-    // claim
-
     /*
      * sprawdzamy czy mozemy stwierdzic negatywnosc podzdania ktore nie zawiera
      * naszego pytania - jesli mozemy to znaczy ze wystarczy ze udowodnimy
