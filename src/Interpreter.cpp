@@ -64,16 +64,19 @@ bool Interpreter::unknownTypeAction(InputStruct& /*is*/)
 
 bool Interpreter::ruleAction(InputStruct& is)
 {
-
-  if(knowledgeBase.addFact(is))
+  AnswerStack stack;
+  std::list<std::string> conflict;
+  if(knowledgeBase.addFact(is, &stack))
   {
     if(io)
       io->addedRule(is.toString());
   }
   else
   {
+    for(auto& i : stack)
+      conflict.push_back(i->toString());
     if(io)
-      io->conflictRule(is.toString(), std::list<std::string>());
+      io->conflictRule(is.toString(), conflict);
   }
   return true;
 }
@@ -82,7 +85,7 @@ bool Interpreter::claimAction(InputStruct& is)
 {
   AnswerStack stack;
   std::list<std::string> conflict;
-  if(knowledgeBase.addFact(is, stack))
+  if(knowledgeBase.addFact(is, &stack))
   {
     if(io)
       io->addedRule(is.toString());

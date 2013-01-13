@@ -14,17 +14,25 @@ public:
 
 public:
   AI(Knowledge& knowledgeBase);
-  Answer ask(const InputStruct& is);
-  Answer ask(const InputStruct& is, AnswerStack& stack);
+  Answer ask(const InputStruct& is,
+             AnswerStack* toSaveResultTrack = NULL);
+  Answer ask(const InputStruct& is,
+             AnswerStack& stack,
+             AnswerStack* toSaveResultTrack = NULL);
 
 private:
   Answer question(const InputStruct& is,
-                  AnswerStack& stack);
+                  AnswerStack& stack,
+                  AnswerStack* toSaveResultTrack);
   Answer sentenceQuestion(const InputStruct& is,
-                          AnswerStack& stack);
+                          AnswerStack& stack,
+                          AnswerStack* toSaveResultTrack);
   Answer claimAnswer(const InputStruct& is,
                      const InputStruct& claim,
-                     AnswerStack &stack);
+                     AnswerStack &stack,
+                     AnswerStack* toSaveResultTrack);
+  static void resetStackFromLvl(AnswerStack* stack,
+                                int lvl);
 
 private:
   Knowledge& knowledgeBase;

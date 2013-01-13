@@ -42,9 +42,19 @@ void IO::answer(AI::Answer ans) const
   std::cout << AnsToStr[ans] << std::endl;
 }
 
-void IO::conflictRule(std::string rule, std::list<std::string>/* stack*/) const
+void IO::conflictRule(std::string rule, std::list<std::string> stack) const
 {
   std::cout << "Nie moge dodac reguły " << rule << std::endl;
+  if(stack.size() == 0)
+  {
+    std::cout << "Konflikt wewnetrzny!" << std::endl;
+    return;
+  }
+
+  int count = 0;
+  std::cout << "Konflikt: " << std::endl;
+  for(auto& i : stack)
+    std::cout << "#" << ++count << " " << i << std::endl;
 }
 
 void IO::unknownCommand(std::string command) const

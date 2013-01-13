@@ -1,10 +1,10 @@
 #include "Knowledge.h"
 #include "AI.h"
 
-bool Knowledge::addFact(InputStruct fact)
+bool Knowledge::addFact(InputStruct fact, AnswerStack* toSaveResultTrack)
 {
   AI ai(*this);
-  if(ai.ask(fact) != AI::Answer::NO)
+  if(ai.ask(fact, toSaveResultTrack) != AI::Answer::NO)
   {
     knowledge.push_back(fact);
     return true;
@@ -13,10 +13,10 @@ bool Knowledge::addFact(InputStruct fact)
     return false;
 }
 
-bool Knowledge::addFact(InputStruct fact, AnswerStack& stack)
+bool Knowledge::addFact(InputStruct fact, AnswerStack& stack, AnswerStack* toSaveResultTrack)
 {
   AI ai(*this);
-  if(ai.ask(fact, stack) != AI::Answer::NO)
+  if(ai.ask(fact, stack, toSaveResultTrack) != AI::Answer::NO)
   {
     knowledge.push_back(fact);
     return true;
@@ -52,11 +52,12 @@ void Knowledge::popFact()
 
 TmpFactPusher::TmpFactPusher(Knowledge& kw,
                              InputStruct fact,
-                             AnswerStack& stack)
+                             AnswerStack& stack,
+                             AnswerStack* toSaveResultTrack)
   : knowledgeBase(kw)
 {
   //TODO - better exception then std.
-  if(!knowledgeBase.addFact(fact, stack))
+  if(!knowledgeBase.addFact(fact, stack, toSaveResultTrack))
   {
     throw std::exception();
   }
