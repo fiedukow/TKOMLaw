@@ -1,0 +1,10 @@
+Dodano regule: Jesli "ktos maluje pokoj na zielono" to "ktos ma zielony pokoj"
+Dodano regule: Jesli "ktos ma zielony pokoj" to "ktos umie skakac na skakance"
+Dodano regule: Jesli "ktos umie skakac na skakance" to "ktos jest wesolym czlowiekiem"
+Dodano regule: Jesli "ktos jest wesolym czlowiekiem" i "Ala ma kota" to "kot Ali jest wesoly"
+Dodano regule: "Ala ma kota"
+Na temat: "Ala ma kota", wiem nastepujace rzeczy:
+#1 Jesli "ktos jest wesolym czlowiekiem" i "Ala ma kota" to "kot Ali jest wesoly"
+#2 "Ala ma kota"
+Dodano regule: "ktos maluje pokoj na zielono"
+PRAWDA
