@@ -1,0 +1,39 @@
+body
+{
+  font-family: Verdana, Arial, sans-serif;
+}
+h1.Title
+{
+  text-align: center;
+  width: 100%;
+}
+h2.Subtitle
+{
+  text-align: center;
+  width: 100%;
+}
+h3.Author
+{
+  text-align: center;
+  font-weight: normal;
+  width: 100%;
+}
+
+div.PageSeparator
+{
+  page-break-before: always;
+}
+
+.in
+{
+  color: blue;
+}
+.out
+{
+  color: brown;
+}
+.outq
+{
+  color: gray;
+}
+
