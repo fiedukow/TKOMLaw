@@ -1,5 +1,6 @@
 #include <cassert>
 #include <algorithm>
+#include <iostream>
 
 #include "AI.h"
 
@@ -105,20 +106,35 @@ AI::Answer AI::question(const InputStruct& is,
        * że całe zdanie jest fałszywe - w kazdym innym wypadku nadal nie wiemy
        * nic. Uzywamy wnioskowania nie wprost.
        */
-
+      try
       {
         TmpFactPusher f(knowledgeBase, is.childs.front(), stack);
         ans = question(is.childs.back(), stack, NULL);
       }
-      if(ans == Answer::NO)
-        return ans;
+      catch(...)
+      {
+        assert(false);
+      }
 
+      if(ans == Answer::NO)
+      {
+        return ans;
+      }
+
+      try
       {
         TmpFactPusher f(knowledgeBase, is.childs.back(), stack);
         ans = question(is.childs.front(), stack, NULL);
       }
+      catch(...)
+      {
+        assert(false);
+      }
+
       if(ans == Answer::NO)
+      {
         return ans;
+      }
 
       return Answer::DK;
     }
@@ -142,16 +158,27 @@ AI::Answer AI::question(const InputStruct& is,
        */
       if ((leftAns && rightAns) == Answer::DK)
       {
+        try
         {
           TmpFactPusher f(knowledgeBase, is.childs.front(), stack);
           ans = question(is.childs.back(), stack, NULL);
         }
+        catch(...)
+        {
+          ans = Answer::DK;
+        }
+
         if(ans == Answer::NO)
           return Answer::YES;
 
+        try
         {
           TmpFactPusher f(knowledgeBase, is.childs.back(), stack);
           ans = question(is.childs.front(), stack, NULL);
+        }
+        catch(...)
+        {
+          ans = Answer::DK;
         }
         if(ans == Answer::NO)
           return Answer::YES;
@@ -215,10 +242,12 @@ AI::Answer AI::sentenceQuestion(const InputStruct& is,
         Answer ans = question(currFact->childs.front(), stack, toSaveResultTrack);
         stack.pop_back();
         bool neg = currFact->childs.back().getIfNegativeFromSimpleSentence();
-        if(neg)
-          ans = !ans;
-        if(ans != Answer::DK)
+        if(ans == Answer::YES)
+        {
+          if(neg)
+            ans = !ans;
           return ans;
+        }
       }
 
       //mozemy tez z niej skorzystac jesli nastepnik jest falszywy
@@ -299,19 +328,30 @@ AI::Answer AI::claimAnswer(const InputStruct& is,
     }
 
     //sprawdzenie rownowaznosci
+    try
     {
       TmpFactPusher f(knowledgeBase, claim.childs.front(), stack);
       ans = question(claim.childs.back(), stack, NULL);
     }
+    catch(...)
+    {
+      ans = Answer::NO;
+    }
+
     if(ans != Answer::YES)
     {
       stack.pop_back();
       return Answer::DK;
     }
 
+    try
     {
       TmpFactPusher f(knowledgeBase, claim.childs.back(), stack);
       ans = question(claim.childs.front(), stack, NULL);
+    }
+    catch(...)
+    {
+      ans = Answer::NO;
     }
     //Koniec sprawdzenia rownowaznosci
 

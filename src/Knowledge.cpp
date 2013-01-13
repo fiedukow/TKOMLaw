@@ -1,7 +1,7 @@
 #include "Knowledge.h"
 #include "AI.h"
 
-bool Knowledge::addFact(InputStruct fact, AnswerStack* toSaveResultTrack)
+bool Knowledge::addFact(const InputStruct& fact, AnswerStack* toSaveResultTrack)
 {
   AI ai(*this);
   if(ai.ask(fact, toSaveResultTrack) != AI::Answer::NO)
@@ -13,7 +13,7 @@ bool Knowledge::addFact(InputStruct fact, AnswerStack* toSaveResultTrack)
     return false;
 }
 
-bool Knowledge::addFact(InputStruct fact, AnswerStack& stack, AnswerStack* toSaveResultTrack)
+bool Knowledge::addFact(const InputStruct& fact, AnswerStack& stack, AnswerStack* toSaveResultTrack)
 {
   AI ai(*this);
   if(ai.ask(fact, stack, toSaveResultTrack) != AI::Answer::NO)
@@ -51,7 +51,7 @@ void Knowledge::popFact()
 }
 
 TmpFactPusher::TmpFactPusher(Knowledge& kw,
-                             InputStruct fact,
+                             const InputStruct& fact,
                              AnswerStack& stack)
   : knowledgeBase(kw)
 {

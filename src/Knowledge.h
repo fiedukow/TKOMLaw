@@ -15,8 +15,8 @@ class TmpFactPusher;
 class Knowledge
 {
 public:
-  bool addFact(InputStruct, AnswerStack* toSaveResultTrack);
-  bool addFact(InputStruct, AnswerStack&, AnswerStack* toSaveResultTrack);
+  bool addFact(const InputStruct&, AnswerStack* toSaveResultTrack);
+  bool addFact(const InputStruct&, AnswerStack&, AnswerStack* toSaveResultTrack);
   FactList::const_iterator begin() const;
   FactList::const_iterator end() const;
   FactPtrList findBySentence(const std::string&) const;
@@ -33,7 +33,7 @@ class TmpFactPusher
 {
 public:
   TmpFactPusher(Knowledge&,
-                InputStruct fact,
+                const InputStruct& fact,
                 AnswerStack&);
   ~TmpFactPusher();
 
