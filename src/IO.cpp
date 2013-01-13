@@ -15,17 +15,27 @@ std::map<AI::Answer, std::string> answerMap()
   return result;
 }
 
-IO::IO(Interpreter& interpreter, std::string inWord)
+IO::IO(Interpreter& interpreter, int argc, char* argv[])
   : interpreter(interpreter),
-    inWord(inWord)
+    verbose(true),
+    inc(false)
 {
+  for(int i = 1; i < argc; ++i)
+  {
+    std::string curr(argv[i]);
+    if(curr == "-q" || curr == "--quiet")
+      verbose = false;
+    else if(curr == "-i" || curr == "--incentive")
+      inc = true;
+  }
 }
 
 void IO::operator()() const
 {
   std::string inputLine;
   do {
-    std::cout << inWord;
+    if(inc)
+      std::cout << "> ";
     getline(std::cin, inputLine);
     if(inputLine != "")
       interpreter.parseLine(inputLine);
@@ -34,7 +44,8 @@ void IO::operator()() const
 
 void IO::addedRule(std::string rule) const
 {
-  std::cout << "Dodano regule: " << rule << std::endl;
+  if(verbose)
+    std::cout << "Dodano regule: " << rule << std::endl;
 }
 
 void IO::answer(AI::Answer ans) const
