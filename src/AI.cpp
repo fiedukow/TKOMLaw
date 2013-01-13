@@ -162,9 +162,14 @@ AI::Answer AI::question(const InputStruct& is,
     case LogicOperator::NOT:
       return !question(is.childs.front(), stack, toSaveResultTrack);
     case LogicOperator::IMPL:
+    try
     {
       TmpFactPusher f(knowledgeBase, is.childs.front(), stack, toSaveResultTrack);
       return question(is.childs.back(), stack, toSaveResultTrack);
+    }
+    catch(...)
+    {
+      return Answer::DK;
     }
     case LogicOperator::NONE:
       return sentenceQuestion(is, stack, toSaveResultTrack);
