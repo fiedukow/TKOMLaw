@@ -1,0 +1,186 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="Author" content="fiedukow">
+	<meta http-equiv="Reply-to" content="fiedukow@gmail.com">
+	<meta http-equiv="Content-Language" content="pl"> 
+	<title>TKOM :: dokumentacja koncowa</title>
+	<link rel="Stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<h1 class="Title">Techniki kompilacji</h1>
+<h2 class="Subtitle">Dokumentacja koncowa projektu</h2>
+<h2 class="Subtitle"><cite>System analizy sformalizowanych aktów prawnych.</cite></h2>
+<h3 class="Author">Autor: <strong>Andrzej Fiedukowicz</strong></h3>
+<h3 class="Author">Prowadzący projekt: <strong>Piotr Gawkowski</strong></h3>
+<div class="PageSeparator"></div>
+
+<h1>Wstep</h1>
+<p>Niniejsza dokumentacja stanowi jedynie rozszerzenie dokumentacji wstępnej. Jej głównym
+celem jest wskazanie zmian względem dokumentacji wstępnej i uzasadnienie ich wprowadzenia.</p>
+<h1>Zmiany wzgledem dokumentacji wstepnej</h1>
+<h2>Gramatyka</h2>
+<p>Gramatyka aplikacji względem dokumentacji wstępnej została rozszerzona o możliwość pytania o reguły
+i po zmianach ma następującą postać EBNF:</p>
+<pre>
+WEJSCIE = {ZDANIE};
+ZDANIE = ZDANIE_TWIERDZACE | REGULA | PYTANIE | WYSZUKIWANIE;;
+REGULA = "Jesli ", ZDANIE_TWIERDZACE, " to ", ZDANIE_PROSTE, ".";
+ZDANIE_TWIERDZACE = SUMA_LOGICZNA, ".";
+PYTANIE = (ZDANIE_PROSTE | <strong>REGULA</strong>), "?";
+WYSZUKIWANIE = "Co wiesz o ", ZDANIE_JEZYKOWE, "?";
+SUMA_LOGICZNA = ILOCZYN_LOGICZNY, " lub ", SUMA_LOGICZNA | ILOCZYN_LOGICZNY;
+ILOCZYN_LOGICZNY = ZDANIE_PROSTE, " i ", ILOCZYN_LOGICZNY | ZDANIE_PROSTE;
+ZDANIE_PROSTE = "nie ", ZDANIE_PROSTE | ZDANIE_JEZYKOWE;
+ZDANIE_JEZYKOWE = '"', {ZNAK_ALFABETU}, '"';
+ZNAK_ALFABETU = ^"; 
+</pre>
+<p>Powyższa zmiana rozszerzająca możliwości użytkownika była spowodowana faktem, że w procesie
+impelemtacji modułu wnioskującego zaistniała wewnętrzna potrzeba sprawdzania zgodności reguły
+z bazą wiedzy (w szczególności by sprawdzić czy nowo dodawana reguła nie konfliktuje z bazą wiedzy).</p>
+<p>W związku z tym, wydało się naturalnym udostępnić i tak zaimplementowną funkcjonalność użytkownikowi
+miast ograniczać poprzez gramatykę jego możliwości.</p>
+<p>Zmiana ta ma charakter miejscowy w związku z czym w przypadku gdyby zaistniała potrzeba zablokowania
+tej funkcjonalności by przywrócić stan zgodny z wymaganiami nie będzie to stanowiło problemu impelemtacyjnego.</p>
+
+<h2>Odpowiedzi aplikacji</h2>
+<p>W związku z zainteresowaniem taką funkcjonalością w przypadku gdy przy próba dodawania nowego faktu zakończy
+się niepowodzeniem ze względu na konflikt z dotychczasową bazą wiedzy, miast planowanej wstępnie krótkiej informacji
+o niepowodzeniu aplikacja poda także powód tego konfliktu w postaci stosu reguł wnioskowania wg. których moduł wnioskujący doszedł do sprzeczności.</p>
+<p>Należy mieć na względnie, że pokazanie stosu nie pokazuje całości logiki wnioskowania i w złożonych przypadkach
+(gdy przechodzimy przez wiele operandów np. w iloczynie) może być on niewystarczającą informacją dla zrozumienia
+powodu sprzeczności. Żeby temu zapobiec należało by przedstawiać użytkownikowi całe drzewo wnioskowania co z kolei
+było by nieczytelne, stąd wybrano to rozwiązanie mimo jego słabości.</p>
+
+<h2>Paramtery aplikacji</h2>
+<p>Ze względu na chęć uproszczenia procesu testowania oprócz zakładanej wstępnie opcji <cite>-q</cite> dostępnej
+także jako <cite>--quiet</cite>, dodano nieplanowaną opcję <cite>-i</cite> dostępną także jako <cite>--incentive</cite>
+której wyspecyfikowanie przy uruchamianiu aplikacji powoduje pojawianie się znaku zachęty gdy program oczekuje na
+dane wejscie od użytkownika. Procedury testowe nie korzystają z tej opcji dzięki czemu nie muszą w wyjściach referencyjnych
+uwzględniać (i przez to zaciemniać obrazu referencyjnego wyjścia) znaku zachęty.
+
+<h2>Odpowiedzi na przyklady</h2>
+<p>Aplikacja z założenia powinna odpowiadać na pytania identycznie jak w przykładach zawartych w dokumentacji wstępnej z
+wyjątkiem wspomnianej w sekcji "Odpowiedzi aplikacji" sytuacji konfliktu nowego faktu z dotychczasową bazą wiedzy.</p>
+<p>Niestety w procesie opisywania przykładowych wejść aplikacji w dokumentacji wstępnej nastąpiła pomyłka - w przykładzie
+pierwszym, odpowiedź jakiej aplikacja udziela na 3 cie zapytanie <strong>"idzie do wiezienia"?</strong> nie jest
+twierdząca a nieokreślona (zamiast PRAWDA, NIE WIADOMO). Dzieje się tak ponieważ jest to poprawny logicznie wniosek.
+Jedyną regułą określającą warunki pójścia do więzienia jest reguła pierwsza, której poprzednik wymaga by 
+zaszły wszystkie trzy fakty: 
+<ul>
+<li><strong>"wytnie drzewo"</strong></li>
+<li><strong>"drzewo pod ochrona"</strong></li>
+<li><strong>nie "drzewo ma mniej niz 5 lat"</strong></li>
+</ul>
+z których tylko dwa pierwsze są zawarte w bazie wiedzy w związku z czym nie można odpowiedzieć na zadane pytanie.</p>
+<p>W tym samym przykładzie w kolejnym pytaniu (<strong>"idzie do wiezienia" i "drzewo ma mniej niz 5 lat"?</strong>) 
+w dokumentacji wstępnej zasugerowano że poprawną odpowiedzią na to zapytanie jest odpowiedź nieokreślona (NIE WIADOMO),
+w rzeczywistości jednak taki iloczyn logiczny ma wartość określoną, ponieważ z faktu, 
+że <strong>"drzewo ma mniej niż 5 lat" </strong> wynika na mocy reguły #2, że <strong>nie "idzie do więzienia"</strong>
+ w związku z tym nie możliwym jest by jednocześnie spełnione były oba pradykaty wewnątrz iloczyny o który pytał 
+użytkownik - stąd odpowiedź podawana przez aplikację jest negatywna (NIE PRAWDA).</p>
+<p>Ostatecznie więc przykład pierwszy z dokumentacji wstępnej przybrał formę:</p>
+<pre>
+<cite class="in">Jesli "wytnie drzewo" i "drzewo pod ochroną" i nie "drzewo ma mniej niż 5 lat" to "idzie do wiezienia".</cite>
+<cite class="outq">Zdanie: <strong>'Jesli "wytnie drzewo" i "drzewo pod ochroną" i nie "drzewo ma mniej niż 5 lat" to "idzie do wiezienia"'</strong> zostało dodane do bazy wiedzy.</cite>				   
+<cite class="in">Jesli nie "wytnie drzewo" lub "drzewo ma mniej niż 5 lat" to nie "idzie do wiezienia".</cite>
+<cite class="outq">Zdanie: <strong>'Jesli nie "wytnie drzewo" lub "drzewo ma mniej niż 5 lat" to nie "idzie do wiezienia"'</strong> zostało dodane do bazy wiedzy.</cite>				   
+<cite class="in">"idzie do wiezienia"?</cite>
+<cite class="out">NIE WIADOMO</cite>
+<cite class="in">nie "idzie do wiezienia"?</cite>
+<cite class="out">NIE WIADOMO</cite>
+<cite class="in">"wytnie drzewo".</cite>
+<cite class="outp">Zdanie: <strong>'"wytnie drzewo"'</strong> zostało dodane do bazy wiedzy.</cite>
+<cite class="in">"idzie do wiezienia"?</cite>
+<cite class="out">NIE WIADOMO</cite>
+<cite class="in">"drzewo pod ochroną".</cite>
+<cite class="outp">Zdanie: <strong>'"drzewo pod ochroną"'</strong> zostało dodane do bazy wiedzy.</cite>
+<cite class="in">"idzie do wiezienia"?</cite>
+<cite class="out">NIE WIADOMO</cite>
+<cite class="in">"idzie do więzienia" i "drzewo ma mniej niż 5 lat"?</cite>
+<cite class="out">NIE PRAWDA</cite>
+<cite class="in">"idzie do więzienia" lub "drzewo ma mniej niż 5 lat"?</cite>
+<cite class="out">PRAWDA</cite>
+</pre>
+
+<p></p>
+<p>Celem umieszczenia w dokumentacji wstępnej drugiego przykładu było zaprezentowania działania aplikacji w przypadku
+wystąpienia konfliktu przy dodawaniu nowego faktu do bazy wiedzy. Niestety w przypadku tego wejścia konfliktu 
+w rzeczywistości nie ma - ponieważ wszystkie literały mają wartość nieokreśloną, nie ma żadnych przesłanek
+by stwierdzić, że przykłady stoją w konflikcie. Nie wyklucza to jednak, że istnieją takie wartościowania literałów
+dla których rzeczywiście nastąpi konflikt. W praktyce dzięki takim faktom możemy świadomie odrzucać pewne
+wartościowania predykatów.</p>
+
+<h1>Ważniejsze szczegóły implementacyjne</h1>
+<h2>Interpreter</h2>
+<ul>
+<li>Implementacja tego modułu zawarta jest w plikach Interpreter.h, Interpreter.cpp oraz TKOMLawGrammar.hpp.</li>
+<li>Podobnie jak pozostałe moduły tak i ten korzysta ze struktury InputStruct opisanej niżej.</li>
+<li>Moduł ten wykonuje parsowanie kolejnych linii wejścia podanych przez moduł wejścia/wyjścia wykorzystując w tym
+celu bibliotekę boost spirit, gramatyka której jest opisana w pliku TKOMLawGrammar.hpp.</li>
+<li>Bilbioteka boost spirit przekształca ciąg znaków na strukturę InputStruct, na podstawie której moduł interpretera
+wykonuje kolejne akcje zależne od pola st (sentence type) w tejże strukturze.</li>
+</ul>
+<h2>Baza wiedzy</h2>
+<ul>
+<li>Implementacja tego modułu zawarta jest w plikach Knowledge.h oraz Knowledge.cpp.</li>
+<li>Podobnie jak pozostałe moduły tak i ten korzysta ze struktury InputStruct opisanej niżej.</li>
+<li>Moduł ten pozwala na dodawanie faktów do swoich kontenerów, sprawdzając jednak każdorazowo czy nowe fakty
+nie są sprzeczne dotychczasowymi. O takich przypadkach metody dodające fakty informują przez zwracaną wartość
+typu bool (false oznacza że nie udało się dodać faktu).</li>
+<li>Moduł ten udostępnia metody pozwalające uzyskiwać listę faktów powiązanych z zadanym zdaniem prostym a także
+iteratory pozwalające przeglądać całą bieżącą bazę wiedzy.</li>
+<li>Dodatkowo do tego modułu została dołączona klasa pozwalająca na dodanie do bazy wiedzy faktu na czas życia 
+jej obiektu (scope adder). Klasa ta jest wykorzystywana przez moduł wnioskujący przy wnioskowaniu nie wprost.</li>
+</ul>
+<h2>Modul wnioskujacy</h2>
+<ul>
+<li>Implementacja tego modułu zawarta jest w plikach AI.h oraz AI.cpp.</li>
+<li>Podobnie jak pozostałe moduły tak i ten korzysta ze struktury InputStruct opisanej niżej.</li>
+<li>TODO</li>
+</ul>
+<h2>Modul wejscia/wyjscia</h2>
+<ul>
+<li>Implementacja tego modułu zawarta jest w plikach IO.h oraz IO.cpp.</li>
+<li>Jest to moduł dostępowy do standardowego wejscia i wyjscia. Zawiera on główną pęltę aplikacji
+odczytującą kolejne linie wejścia ze standardowego wejścia.</li>
+<li>Moduł ten potrafi interpretować parametry aplikacji.</li>
+<li>Moduł ten zawiera metody pozwalające wyprowadzać konkretne parametryzowalne komunikaty na wyście, z których
+korzystają pozostałe moduły (w praktyce moduł Interpretera).</li>
+</ul>
+<h2>InputStruct</h2>
+<ul>
+<li>Implementacja tej struktury zawarta jest w plikach InputStruct.h oraz InputStruct.cpp.</li>
+<li>Jest to drzewiasta struktura zawierająca w każdym węźle operator ALBO zdanie językowe.</li>
+<li>Tylko zdania językowe mogą być liśmi drzewa.</li>
+<li>Zdania językowe nie mogą mieć dzieci, operator NOT ma jedno dziecko, pozostałe operatory dwójkę dzieci.</li>
+<li>Moduł jest dostosowany do współpracy z biblioteką boost spirit dzięki bibliotece boost fusion.</li>
+<li>Moduł posiada metody do operowania na zdaniach prostych pozwalające otrzymać z nich tekst i sumę negacji (np. 'nie nie nie "a"' suma negacji to negacja a tekst to "a").</li>
+<li>Struktura posiada metodę toString() pozwalajacą jej zapisać swoją liniową wersję w formie słownej.</li>
+</ul>
+
+<h1>Testy</h1>
+<p>Testy aplikacji były przeprowadzane w formie testów integracyjnych polegających na automatycznym
+uruchamianiu apliakcji z zadanymi wejściami i porównywanie wyjść z referencyjnymi.
+Testowaniu poddawany zostaje przedewszystkim moduł wnioskujący, choć błedy w pozotałych częściach
+aplikacji także zapewne zostaną wykryte przy ich pomocy.
+Testy te pokrywają zarówno pojedyńcze proste przypadki wnioskowania jak i łączenia różnych technik
+wnioskowania na różnych poziomach. Część testów została stworzona na bazie przykładów z dokumentacji wstępnej.
+Skrypt testujący dostępny w katalogu głównym aplikacji przyjmuję liczbę testów do przeprowadzania i wykonuje
+kolejne testy od pierwszego do zadanego wypisując na wyjście informację o tym który test jest aktualnie przeprowadzany
+oraz jakie są różnice między wyjściem oczekiwanym a rzeczywistym (narzędzie diff).
+Wejscia testowe należy umieszczać w katalogu inputs jako pliki o nazwie test# gdzie # to kolejny nieużywany numer,
+referencyjne wyjścia natomiast należy umieszczać w tym samym katalogu w pliku o nazwie rtest#.
+Wraz z aplikacją dostarczono zestaw testów gotowych do uruchomienia.</p>
+
+<h1>Zasoby</h1>
+<p>Aktualną wersję kodu źródłowego można pobrać z publicznego repozytorium githuba: <strong>https://github.com/fiedukow/TKOMLaw.git</strong></p>
+
+<h1>Legenda dla przykladowej interakcji z programem</h1>
+<ul>
+<li class="in">Standardowe wejscie</li>
+<li class="out">Standardowe wyjscie</li>
+<li class="outq">Standardowe wyjscie (gdy uruchomiono bez -q)</li>
+</ul>
+</body>
