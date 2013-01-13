@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-
+<html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<meta name="Author" content="fiedukow">
@@ -25,7 +25,7 @@ celem jest wskazanie zmian względem dokumentacji wstępnej i uzasadnienie ich w
 i po zmianach ma następującą postać EBNF:</p>
 <pre>
 WEJSCIE = {ZDANIE};
-ZDANIE = ZDANIE_TWIERDZACE | REGULA | PYTANIE | WYSZUKIWANIE;;
+ZDANIE = ZDANIE_TWIERDZACE | REGULA | PYTANIE | WYSZUKIWANIE;
 REGULA = "Jesli ", ZDANIE_TWIERDZACE, " to ", ZDANIE_PROSTE, ".";
 ZDANIE_TWIERDZACE = SUMA_LOGICZNA, ".";
 PYTANIE = (ZDANIE_PROSTE | <strong>REGULA</strong>), "?";
@@ -37,23 +37,23 @@ ZDANIE_JEZYKOWE = '"', {ZNAK_ALFABETU}, '"';
 ZNAK_ALFABETU = ^"; 
 </pre>
 <p>Powyższa zmiana rozszerzająca możliwości użytkownika była spowodowana faktem, że w procesie
-impelemtacji modułu wnioskującego zaistniała wewnętrzna potrzeba sprawdzania zgodności reguły
+implemetacji modułu wnioskującego zaistniała wewnętrzna potrzeba sprawdzania zgodności reguły
 z bazą wiedzy (w szczególności by sprawdzić czy nowo dodawana reguła nie konfliktuje z bazą wiedzy).</p>
 <p>W związku z tym, wydało się naturalnym udostępnić i tak zaimplementowną funkcjonalność użytkownikowi
 miast ograniczać poprzez gramatykę jego możliwości.</p>
 <p>Zmiana ta ma charakter miejscowy w związku z czym w przypadku gdyby zaistniała potrzeba zablokowania
-tej funkcjonalności by przywrócić stan zgodny z wymaganiami nie będzie to stanowiło problemu impelemtacyjnego.</p>
+tej funkcjonalności by przywrócić stan zgodny z wymaganiami nie będzie to stanowiło problemu implemenntacyjnego.</p>
 
 <h2>Odpowiedzi aplikacji</h2>
-<p>W związku z zainteresowaniem taką funkcjonalością w przypadku gdy przy próba dodawania nowego faktu zakończy
+<p>W związku z zainteresowaniem taką funkcjonalością w przypadku gdy próba dodawania nowego faktu zakończy
 się niepowodzeniem ze względu na konflikt z dotychczasową bazą wiedzy, miast planowanej wstępnie krótkiej informacji
 o niepowodzeniu aplikacja poda także powód tego konfliktu w postaci stosu reguł wnioskowania wg. których moduł wnioskujący doszedł do sprzeczności.</p>
-<p>Należy mieć na względnie, że pokazanie stosu nie pokazuje całości logiki wnioskowania i w złożonych przypadkach
+<p>Należy mieć na względzie, że pokazanie stosu nie pokazuje całości logiki wnioskowania i w złożonych przypadkach
 (gdy przechodzimy przez wiele operandów np. w iloczynie) może być on niewystarczającą informacją dla zrozumienia
 powodu sprzeczności. Żeby temu zapobiec należało by przedstawiać użytkownikowi całe drzewo wnioskowania co z kolei
 było by nieczytelne, stąd wybrano to rozwiązanie mimo jego słabości.</p>
 
-<h2>Paramtery aplikacji</h2>
+<h2>Parametry aplikacji</h2>
 <p>Ze względu na chęć uproszczenia procesu testowania oprócz zakładanej wstępnie opcji <cite>-q</cite> dostępnej
 także jako <cite>--quiet</cite>, dodano nieplanowaną opcję <cite>-i</cite> dostępną także jako <cite>--incentive</cite>
 której wyspecyfikowanie przy uruchamianiu aplikacji powoduje pojawianie się znaku zachęty gdy program oczekuje na
@@ -78,7 +78,7 @@ z których tylko dwa pierwsze są zawarte w bazie wiedzy w związku z czym nie m
 w dokumentacji wstępnej zasugerowano że poprawną odpowiedzią na to zapytanie jest odpowiedź nieokreślona (NIE WIADOMO),
 w rzeczywistości jednak taki iloczyn logiczny ma wartość określoną, ponieważ z faktu, 
 że <strong>"drzewo ma mniej niż 5 lat" </strong> wynika na mocy reguły #2, że <strong>nie "idzie do więzienia"</strong>
- w związku z tym nie możliwym jest by jednocześnie spełnione były oba pradykaty wewnątrz iloczyny o który pytał 
+ w związku z tym niemożliwym jest by jednocześnie spełnione były oba pradykaty wewnątrz iloczyny o który pytał 
 użytkownik - stąd odpowiedź podawana przez aplikację jest negatywna (NIE PRAWDA).</p>
 <p>Ostatecznie więc przykład pierwszy z dokumentacji wstępnej przybrał formę:</p>
 <pre>
@@ -138,12 +138,23 @@ jej obiektu (scope adder). Klasa ta jest wykorzystywana przez moduł wnioskując
 <ul>
 <li>Implementacja tego modułu zawarta jest w plikach AI.h oraz AI.cpp.</li>
 <li>Podobnie jak pozostałe moduły tak i ten korzysta ze struktury InputStruct opisanej niżej.</li>
-<li>TODO</li>
+<li>Moduł udostępnia metody pozwalające zadawać pytania z uwzględnieniem możliwości podania wskaźnika do stosu 
+na który mają być wpisane kroki wnioskowania.</li>
+<li>Moduł przeprowadza wnioskowanie wprost a w przypadku jego niepowodzenia stara się wnioskować nie wprost.</li>
+<li>Moduł posiada mechanizm uniemożliwiający zapętlenie wnioskowania przez próbę udowodnienia faktu używając pośrednio
+lub bezpośrednio tego samego faktu.</li>
+<li>Moduł operuje na istniejących strukturach InputStruct i NIGDY nie tworzy własnych ani kopii już istniejących.</li>
+<li>Korzystając z poprzedniej własności system sprawdzający czy nie nastąpiło zapętlenie korzysta z porównań wskaźników.
+Miast tego można by wykorzystać porównanie zserializowanych wartości poszczególnych InputStruct
+co dodatkowo pozwoliło by uniknąć niepotrzebnego rozwijania drzew wnioskowania tam gdzie takie same literały są 
+w wielu faktach (pod innymi adresami), jednakże pomysł ten został odrzucony ponieważ okazało się (doświadczalnie), że
+operacje porównywania ciągów znakowych są bardziej czasochłonne niż rozwijanie dodatkowych gałęzi drzewa
+(wraz z porównywaniem wskaźników).</li>
 </ul>
 <h2>Modul wejscia/wyjscia</h2>
 <ul>
 <li>Implementacja tego modułu zawarta jest w plikach IO.h oraz IO.cpp.</li>
-<li>Jest to moduł dostępowy do standardowego wejscia i wyjscia. Zawiera on główną pęltę aplikacji
+<li>Jest to moduł dostępowy do standardowego wejscia i wyjscia. Zawiera on główną pętlę aplikacji
 odczytującą kolejne linie wejścia ze standardowego wejścia.</li>
 <li>Moduł ten potrafi interpretować parametry aplikacji.</li>
 <li>Moduł ten zawiera metody pozwalające wyprowadzać konkretne parametryzowalne komunikaty na wyście, z których
@@ -162,13 +173,13 @@ korzystają pozostałe moduły (w praktyce moduł Interpretera).</li>
 
 <h1>Testy</h1>
 <p>Testy aplikacji były przeprowadzane w formie testów integracyjnych polegających na automatycznym
-uruchamianiu apliakcji z zadanymi wejściami i porównywanie wyjść z referencyjnymi.
-Testowaniu poddawany zostaje przedewszystkim moduł wnioskujący, choć błedy w pozotałych częściach
+uruchamianiu aplikacji z zadanymi wejściami i porównywanie wyjść z referencyjnymi.
+Testowaniu poddawany był przedewszystkim moduł wnioskujący, choć błedy w pozostałych częściach
 aplikacji także zapewne zostaną wykryte przy ich pomocy.
 Testy te pokrywają zarówno pojedyńcze proste przypadki wnioskowania jak i łączenia różnych technik
 wnioskowania na różnych poziomach. Część testów została stworzona na bazie przykładów z dokumentacji wstępnej.
-Skrypt testujący dostępny w katalogu głównym aplikacji przyjmuję liczbę testów do przeprowadzania i wykonuje
-kolejne testy od pierwszego do zadanego wypisując na wyjście informację o tym który test jest aktualnie przeprowadzany
+Skrypt testujący dostępny w katalogu głównym aplikacji przyjmuje liczbę testów do przeprowadzania i wykonuje
+kolejne testy od pierwszego do zadanego wypisując na wyjście informację o tym, który test jest aktualnie przeprowadzany
 oraz jakie są różnice między wyjściem oczekiwanym a rzeczywistym (narzędzie diff).
 Wejscia testowe należy umieszczać w katalogu inputs jako pliki o nazwie test# gdzie # to kolejny nieużywany numer,
 referencyjne wyjścia natomiast należy umieszczać w tym samym katalogu w pliku o nazwie rtest#.
@@ -184,3 +195,4 @@ Wraz z aplikacją dostarczono zestaw testów gotowych do uruchomienia.</p>
 <li class="outq">Standardowe wyjscie (gdy uruchomiono bez -q)</li>
 </ul>
 </body>
+</html>
