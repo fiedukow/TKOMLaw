@@ -1,5 +1,6 @@
 #include <cassert>
 #include <algorithm>
+#include <iostream>
 
 #include "AI.h"
 
@@ -171,6 +172,7 @@ AI::Answer AI::question(const InputStruct& is,
     {
       return Answer::DK;
     }
+
     case LogicOperator::NONE:
       return sentenceQuestion(is, stack, toSaveResultTrack);
     default:
@@ -182,6 +184,7 @@ AI::Answer AI::sentenceQuestion(const InputStruct& is,
                                 AnswerStack& stack,
                                 AnswerStack* toSaveResultTrack)
 {
+  bool addedSth = false;
   assert(is.op == LogicOperator::NONE);
 
   FactPtrList facts = knowledgeBase.findBySentence(is.text); //fakty powiazane
@@ -190,6 +193,7 @@ AI::Answer AI::sentenceQuestion(const InputStruct& is,
   for(FactPtrList::const_iterator i = facts.begin(); i != facts.end(); ++i)
   {
     const InputStruct* currFact = *i;
+
     if(std::find(stack.begin(), stack.end(), currFact) != stack.end())
     {
       continue; //nie wykorzystuj faktow ktore probujesz udowodnic
@@ -197,8 +201,12 @@ AI::Answer AI::sentenceQuestion(const InputStruct& is,
 
     if(toSaveResultTrack)
     {
-      resetStackFromLvl(toSaveResultTrack, stack.size());
+      if(addedSth)
+      {
+        toSaveResultTrack->pop_back();
+      }
       toSaveResultTrack->push_back(currFact);
+      addedSth = true;
     }
 
     if(currFact->st == SentenceType::RULE)
@@ -207,7 +215,6 @@ AI::Answer AI::sentenceQuestion(const InputStruct& is,
       if(currFact->childs.back().getTextFromSimpleSentence() == is.text)
       {
         stack.push_back(currFact);
-
         Answer ans = question(currFact->childs.front(), stack, toSaveResultTrack);
         stack.pop_back();
         bool neg = currFact->childs.back().getIfNegativeFromSimpleSentence();
@@ -216,6 +223,21 @@ AI::Answer AI::sentenceQuestion(const InputStruct& is,
         if(ans != Answer::DK)
           return ans;
       }
+
+      //mozemy tez z niej skorzystac jesli nastepnik jest falszywy
+      //wtedy wiemy ze poprzednik jest falszywy
+      stack.push_back(currFact);
+      if(question(currFact->childs.back(), stack, toSaveResultTrack)
+         == Answer::NO)
+      {
+        Answer ans = claimAnswer(is, currFact->childs.front(), stack, toSaveResultTrack);
+        if(ans == Answer::YES)
+        {
+          stack.pop_back();
+          return !ans;
+        }
+      }
+      stack.pop_back();
     }
     else
     {
