@@ -33,9 +33,20 @@ private:
                      AnswerStack* toSaveResultTrack);
   static void resetStackFromLvl(AnswerStack* stack,
                                 int lvl);
+  static bool isOnStack(AnswerStack& stack, const InputStruct* is);
 
 private:
   Knowledge& knowledgeBase;
+};
+
+class ScopeStackAdder
+{
+public:
+  ScopeStackAdder(AnswerStack& stack, const InputStruct* is);
+  ~ScopeStackAdder();
+
+private:
+  AnswerStack& stack;
 };
 
 AI::Answer operator!(AI::Answer ans);

@@ -1,6 +1,5 @@
 #include <cassert>
 #include <algorithm>
-#include <iostream>
 
 #include "AI.h"
 
@@ -184,7 +183,9 @@ AI::Answer AI::sentenceQuestion(const InputStruct& is,
                                 AnswerStack& stack,
                                 AnswerStack* toSaveResultTrack)
 {
-  bool addedSth = false;
+  if(isOnStack(stack, &is))
+    return Answer::DK;
+
   assert(is.op == LogicOperator::NONE);
 
   FactPtrList facts = knowledgeBase.findBySentence(is.text); //fakty powiazane
@@ -194,19 +195,15 @@ AI::Answer AI::sentenceQuestion(const InputStruct& is,
   {
     const InputStruct* currFact = *i;
 
-    if(std::find(stack.begin(), stack.end(), currFact) != stack.end())
+    if(isOnStack(stack, currFact))
     {
       continue; //nie wykorzystuj faktow ktore probujesz udowodnic
     }
 
     if(toSaveResultTrack)
     {
-      if(addedSth)
-      {
-        toSaveResultTrack->pop_back();
-      }
+      resetStackFromLvl(toSaveResultTrack, stack.size());
       toSaveResultTrack->push_back(currFact);
-      addedSth = true;
     }
 
     if(currFact->st == SentenceType::RULE)
@@ -254,11 +251,6 @@ AI::Answer AI::claimAnswer(const InputStruct& is,
                            AnswerStack& stack,
                            AnswerStack* toSaveResultTrack)
 {
-  if(std::find(stack.begin(), stack.end(), &claim) != stack.end())
-  {
-    return Answer::DK;
-  }
-
   switch(claim.op)
   {
   case LogicOperator::NONE:
@@ -312,7 +304,7 @@ AI::Answer AI::claimAnswer(const InputStruct& is,
     //sprawdzenie rownowaznosci
     {
       TmpFactPusher f(knowledgeBase, claim.childs.front(), stack);
-      ans = question(is, stack, NULL);
+      ans = question(claim.childs.back(), stack, NULL);
     }
     if(ans != Answer::YES)
     {
@@ -322,7 +314,7 @@ AI::Answer AI::claimAnswer(const InputStruct& is,
 
     {
       TmpFactPusher f(knowledgeBase, claim.childs.back(), stack);
-      ans = question(is, stack, NULL);
+      ans = question(claim.childs.front(), stack, NULL);
     }
     //Koniec sprawdzenia rownowaznosci
 
@@ -339,7 +331,33 @@ AI::Answer AI::claimAnswer(const InputStruct& is,
 
 void AI::resetStackFromLvl(AnswerStack* stack, int lvl)
 {
+  assert(lvl >= 0);
   int toRm = stack->size() - lvl;
   while(toRm-- > 0)
+  {
     stack->pop_back();
+  }
+}
+
+bool AI::isOnStack(AnswerStack& stack, const InputStruct* is)
+{
+  /*std::string isStr = is->toString();
+  for(auto& i : stack)
+  {
+    if(isStr == i->toString())
+      return true;
+  }
+  return false;*/
+  return (std::find(stack.begin(), stack.end(), is) != stack.end());
+}
+
+ScopeStackAdder::ScopeStackAdder(AnswerStack& stack, const InputStruct* is)
+  : stack(stack)
+{
+  stack.push_back(is);
+}
+
+ScopeStackAdder::~ScopeStackAdder()
+{
+  stack.pop_back();
 }
